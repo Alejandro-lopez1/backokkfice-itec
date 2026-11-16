@@ -23,7 +23,9 @@ public class Materia {
         this.anio = anio;
         this.cuatrimestre = cuatrimestre;
         this.activa = activa;
-        this.listaCorrelativas = listaCorrelativas != null ? listaCorrelativas : new ArrayList<>();
+        // Copia defensiva: la lista recibida (ej. List.of(), inmutable) nunca
+        // se guarda directo, para que la entidad siempre tenga una lista mutable.
+        this.listaCorrelativas = listaCorrelativas != null ? new ArrayList<>(listaCorrelativas) : new ArrayList<>();
     }
 
     public String getNombre() {
@@ -64,6 +66,14 @@ public class Materia {
 
     public void setListaCorrelativas(List<Materia> listaCorrelativas) {
         this.listaCorrelativas = listaCorrelativas;
+    }
+
+    /**
+     * Agrega una correlativa encapsulando el acceso a la lista interna.
+     * Es la forma correcta de modificar la relacion desde fuera del modelo.
+     */
+    public void agregarCorrelativa(Materia correlativa) {
+        this.listaCorrelativas.add(correlativa);
     }
 
     @Override

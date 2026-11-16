@@ -22,7 +22,8 @@ public class PlanEstudio {
         this.nombre = nombre;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
-        this.materias = materias != null ? materias : new ArrayList<>();
+        // Copia defensiva: nunca guardar directo una lista recibida (puede ser inmutable).
+        this.materias = materias != null ? new ArrayList<>(materias) : new ArrayList<>();
     }
 
     public String getNombre() {

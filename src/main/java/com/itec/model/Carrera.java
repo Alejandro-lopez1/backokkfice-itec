@@ -17,7 +17,8 @@ public class Carrera {
 
     public Carrera(String nombre, List<PlanEstudio> planes) {
         this.nombre = nombre;
-        this.planes = planes != null ? planes : new ArrayList<>();
+        // Copia defensiva: nunca guardar directo una lista recibida (puede ser inmutable).
+        this.planes = planes != null ? new ArrayList<>(planes) : new ArrayList<>();
     }
 
     public String getNombre() {

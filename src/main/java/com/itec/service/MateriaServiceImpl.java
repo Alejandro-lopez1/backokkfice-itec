@@ -122,7 +122,7 @@ public class MateriaServiceImpl implements MateriaService {
             return MSG_YA_CORRELATIVA;
         }
 
-        materia.getListaCorrelativas().add(correlativa);
+        materia.agregarCorrelativa(correlativa);
         return MSG_CORRELATIVA_AGREGADA;
     }
 

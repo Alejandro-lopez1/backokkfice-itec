@@ -29,6 +29,9 @@ public interface MateriaService {
     /** Busca una materia por nombre. Devuelve la Materia, o null si no existe. */
     Materia buscarMateria(String nombre);
 
+    /** Devuelve todas las materias registradas (para listados de la Vista). */
+    java.util.List<Materia> listarTodas();
+
     /** Modifica nombre, anio y cuatrimestre de una materia existente. */
     String modificarMateria(String nombreOriginal, String nuevoNombre, int nuevoAnio, int nuevoCuatrimestre);
 

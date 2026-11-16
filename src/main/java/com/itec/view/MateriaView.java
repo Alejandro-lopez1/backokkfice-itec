@@ -30,6 +30,7 @@ public class MateriaView {
             System.out.println("4. Dar de Baja Materia");
             System.out.println("5. Agregar Correlativa");
             System.out.println("6. Volver al menu principal");
+            System.out.println("7. Listar todas las materias");
             opcion = leerOpcion("Seleccione una opcion: ");
 
             switch (opcion) {
@@ -50,6 +51,9 @@ public class MateriaView {
                     break;
                 case 6:
                     System.out.println("Volviendo al menu principal...");
+                    break;
+                case 7:
+                    listarMaterias();
                     break;
                 default:
                     System.out.println("ERROR: opcion invalida");
@@ -118,6 +122,24 @@ public class MateriaView {
 
         String resultado = controller.agregarCorrelativa(nombreMateria, nombreCorrelativa);
         System.out.println(resultado);
+    }
+
+    /** Lista todas las materias: nombre, anio, cuatrimestre, estado y correlativas. */
+    private void listarMaterias() {
+        System.out.println("--- Materias registradas ---");
+        java.util.List<Materia> materias = controller.listarTodas();
+        if (materias.isEmpty()) {
+            System.out.println("(no hay materias registradas)");
+            return;
+        }
+        for (Materia materia : materias) {
+            String estado = materia.isActiva() ? "ACTIVA" : "INACTIVA";
+            System.out.println("- " + materia.getNombre()
+                    + " | Anio " + materia.getAnio()
+                    + " | Cuat " + materia.getCuatrimestre()
+                    + " | " + estado
+                    + " | Correlativas: " + nombresCorrelativas(materia));
+        }
     }
 
     /** Arma la lista de nombres de correlativas para mostrarla. */

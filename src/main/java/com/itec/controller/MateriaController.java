@@ -31,6 +31,11 @@ public class MateriaController {
         return service.buscarMateria(nombre);
     }
 
+    /** Delega en el Service el listado de todas las materias. */
+    public java.util.List<Materia> listarTodas() {
+        return service.listarTodas();
+    }
+
     /** Delega en el Service la modificacion de la materia. */
     public String modificarMateria(String nombreOriginal, String nuevoNombre, int nuevoAnio, int nuevoCuatrimestre) {
         return service.modificarMateria(nombreOriginal, nuevoNombre, nuevoAnio, nuevoCuatrimestre);

@@ -46,6 +46,11 @@ public class MateriaServiceImpl implements MateriaService {
     }
 
     @Override
+    public java.util.List<Materia> listarTodas() {
+        return repository.obtenerTodos();
+    }
+
+    @Override
     public String modificarMateria(String nombreOriginal, String nuevoNombre, int nuevoAnio, int nuevoCuatrimestre) {
         String originalLimpio = normalizar(nombreOriginal);
         if (originalLimpio == null) {

@@ -13,15 +13,17 @@ public class MenuPrincipalView {
     private final MateriaView materiaView;
     private final InscripcionView inscripcionView;
     private final NotaView notaView;
+    private final AsistenciaView asistenciaView;
 
     public MenuPrincipalView(AlumnoView alumnoView, ProfesorView profesorView,
                              MateriaView materiaView, InscripcionView inscripcionView,
-                             NotaView notaView) {
+                             NotaView notaView, AsistenciaView asistenciaView) {
         this.alumnoView = alumnoView;
         this.profesorView = profesorView;
         this.materiaView = materiaView;
         this.inscripcionView = inscripcionView;
         this.notaView = notaView;
+        this.asistenciaView = asistenciaView;
     }
 
     /** Menu principal: se repite hasta que el usuario elige salir. */
@@ -37,6 +39,7 @@ public class MenuPrincipalView {
             System.out.println("3. Gestion de Materias");
             System.out.println("4. Comisiones e Inscripciones");
             System.out.println("5. Notas");
+            System.out.println("6. Asistencias");
             System.out.println("0. Salir");
             int eleccion = leerOpcion("Seleccione una opcion: ");
 
@@ -55,6 +58,9 @@ public class MenuPrincipalView {
                     break;
                 case 5:
                     notaView.mostrarMenuNotas();
+                    break;
+                case 6:
+                    asistenciaView.mostrarMenuAsistencias();
                     break;
                 case 0:
                     System.out.println("Hasta luego!");

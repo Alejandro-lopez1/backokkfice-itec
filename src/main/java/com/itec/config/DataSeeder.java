@@ -1,11 +1,14 @@
 package com.itec.config;
 
 import com.itec.model.Alumno;
+import com.itec.model.Carrera;
 import com.itec.model.ComisionMateria;
 import com.itec.model.Cuatrimestre;
 import com.itec.model.Materia;
+import com.itec.model.PlanEstudio;
 import com.itec.model.Profesor;
 import com.itec.repository.AlumnoRepository;
+import com.itec.repository.CarreraRepository;
 import com.itec.repository.ComisionRepository;
 import com.itec.repository.MateriaRepository;
 import com.itec.repository.ProfesorRepository;
@@ -32,11 +35,12 @@ public final class DataSeeder {
     private DataSeeder() {
     }
 
-    /** Carga alumnos, profesores, materias y comisiones de demostracion. */
+    /** Carga alumnos, profesores, materias, comisiones y carreras de demostracion. */
     public static void cargarDatosIniciales(AlumnoRepository alumnoRepository,
                                             ProfesorRepository profesorRepository,
                                             MateriaRepository materiaRepository,
-                                            ComisionRepository comisionRepository) {
+                                            ComisionRepository comisionRepository,
+                                            CarreraRepository carreraRepository) {
         if (yaCargado) {
             return;
         }
@@ -44,6 +48,7 @@ public final class DataSeeder {
         cargarProfesores(profesorRepository);
         cargarMaterias(materiaRepository);
         cargarComisiones(materiaRepository, profesorRepository, comisionRepository);
+        cargarCarreras(materiaRepository, carreraRepository);
         yaCargado = true;
     }
 
@@ -116,5 +121,32 @@ public final class DataSeeder {
                 materiaRepository.buscarPorNombre("Base de Datos"),
                 c2,
                 profesorRepository.buscarPorDni("20222333")));
+    }
+
+    /**
+     * 2 carreras con 1 plan de estudio cada una, asociando materias ya cargadas.
+     * Las materias del plan son las mismas instancias del repositorio de materias.
+     */
+    private static void cargarCarreras(MateriaRepository materiaRepository,
+                                       CarreraRepository carreraRepository) {
+        // Tecnicatura en Programacion: Plan 2024 con 3 materias.
+        Carrera tecnicatura = new Carrera("Tecnicatura en Programacion", null);
+        PlanEstudio planTecnicatura = new PlanEstudio("Plan 2024",
+                LocalDate.of(2024, 1, 1), LocalDate.of(2026, 12, 31), null);
+        planTecnicatura.getMaterias().add(materiaRepository.buscarPorNombre("Programacion I"));
+        planTecnicatura.getMaterias().add(materiaRepository.buscarPorNombre("Programacion II"));
+        planTecnicatura.getMaterias().add(materiaRepository.buscarPorNombre("Base de Datos"));
+        tecnicatura.getPlanes().add(planTecnicatura);
+        carreraRepository.guardar(tecnicatura);
+
+        // Licenciatura en Sistemas: Plan 2024 con 3 materias.
+        Carrera licenciatura = new Carrera("Licenciatura en Sistemas", null);
+        PlanEstudio planLicenciatura = new PlanEstudio("Plan 2024",
+                LocalDate.of(2024, 1, 1), LocalDate.of(2028, 12, 31), null);
+        planLicenciatura.getMaterias().add(materiaRepository.buscarPorNombre("Programacion I"));
+        planLicenciatura.getMaterias().add(materiaRepository.buscarPorNombre("Matematica Discreta"));
+        planLicenciatura.getMaterias().add(materiaRepository.buscarPorNombre("Redes de Computadoras"));
+        licenciatura.getPlanes().add(planLicenciatura);
+        carreraRepository.guardar(licenciatura);
     }
 }

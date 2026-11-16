@@ -57,13 +57,6 @@ import com.itec.view.ProfesorView;
 public class Main {
 
     public static void main(String[] args) {
-        // 0. Datos iniciales de demostracion (alumnos, profesores, materias, comisiones)
-        DataSeeder.cargarDatosIniciales(
-                new AlumnoRepositoryImpl(),
-                new ProfesorRepositoryImpl(),
-                new MateriaRepositoryImpl(),
-                new ComisionRepositoryImpl());
-
         // 1. Repositorios (persistencia en memoria). Las colecciones son
         //    static en los Impl: las instancias comparten la misma "tabla".
         AlumnoRepository alumnoRepository = new AlumnoRepositoryImpl();
@@ -73,7 +66,16 @@ public class Main {
         AsistenciaRepository asistenciaRepository = new AsistenciaRepositoryImpl();
         CarreraRepository carreraRepository = new CarreraRepositoryImpl();
 
-        // 2. Services (logica de negocio pura, reciben sus repositorios)
+        // 2. Datos iniciales de demostracion (alumnos, profesores, materias,
+        //    comisiones, carreras)
+        DataSeeder.cargarDatosIniciales(
+                alumnoRepository,
+                profesorRepository,
+                materiaRepository,
+                comisionRepository,
+                carreraRepository);
+
+        // 3. Services (logica de negocio pura, reciben sus repositorios)
         AlumnoService alumnoService = new AlumnoServiceImpl(alumnoRepository);
         ProfesorService profesorService = new ProfesorServiceImpl(profesorRepository);
         MateriaService materiaService = new MateriaServiceImpl(materiaRepository);
@@ -84,7 +86,7 @@ public class Main {
                 comisionRepository, asistenciaRepository);
         CarreraService carreraService = new CarreraServiceImpl(carreraRepository, materiaRepository);
 
-        // 3. Controladores delgados (capa de orquestacion, reciben su service)
+        // 4. Controladores delgados (capa de orquestacion, reciben su service)
         AlumnoController alumnoController = new AlumnoController(alumnoService);
         ProfesorController profesorController = new ProfesorController(profesorService);
         MateriaController materiaController = new MateriaController(materiaService);
@@ -93,7 +95,7 @@ public class Main {
         AsistenciaController asistenciaController = new AsistenciaController(asistenciaService);
         CarreraController carreraController = new CarreraController(carreraService);
 
-        // 4. Vistas (capa de presentacion, reciben sus controladores)
+        // 5. Vistas (capa de presentacion, reciben sus controladores)
         AlumnoView alumnoView = new AlumnoView(alumnoController);
         ProfesorView profesorView = new ProfesorView(profesorController);
         MateriaView materiaView = new MateriaView(materiaController);
@@ -102,7 +104,7 @@ public class Main {
         AsistenciaView asistenciaView = new AsistenciaView(asistenciaController, comisionController);
         CarreraView carreraView = new CarreraView(carreraController);
 
-        // 5. Menu principal
+        // 6. Menu principal
         MenuPrincipalView menuPrincipalView = new MenuPrincipalView(
                 alumnoView, profesorView, materiaView, inscripcionView, notaView,
                 asistenciaView, carreraView);

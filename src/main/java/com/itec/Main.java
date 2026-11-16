@@ -3,6 +3,7 @@ package com.itec;
 import com.itec.config.DataSeeder;
 import com.itec.controller.AlumnoController;
 import com.itec.controller.AsistenciaController;
+import com.itec.controller.CarreraController;
 import com.itec.controller.ComisionController;
 import com.itec.controller.MateriaController;
 import com.itec.controller.NotaController;
@@ -11,6 +12,8 @@ import com.itec.repository.AlumnoRepository;
 import com.itec.repository.AlumnoRepositoryImpl;
 import com.itec.repository.AsistenciaRepository;
 import com.itec.repository.AsistenciaRepositoryImpl;
+import com.itec.repository.CarreraRepository;
+import com.itec.repository.CarreraRepositoryImpl;
 import com.itec.repository.ComisionRepository;
 import com.itec.repository.ComisionRepositoryImpl;
 import com.itec.repository.MateriaRepository;
@@ -21,6 +24,8 @@ import com.itec.service.AlumnoService;
 import com.itec.service.AlumnoServiceImpl;
 import com.itec.service.AsistenciaService;
 import com.itec.service.AsistenciaServiceImpl;
+import com.itec.service.CarreraService;
+import com.itec.service.CarreraServiceImpl;
 import com.itec.service.ComisionService;
 import com.itec.service.ComisionServiceImpl;
 import com.itec.service.MateriaService;
@@ -31,6 +36,7 @@ import com.itec.service.ProfesorService;
 import com.itec.service.ProfesorServiceImpl;
 import com.itec.view.AlumnoView;
 import com.itec.view.AsistenciaView;
+import com.itec.view.CarreraView;
 import com.itec.view.InscripcionView;
 import com.itec.view.MenuPrincipalView;
 import com.itec.view.MateriaView;
@@ -65,6 +71,7 @@ public class Main {
         MateriaRepository materiaRepository = new MateriaRepositoryImpl();
         ComisionRepository comisionRepository = new ComisionRepositoryImpl();
         AsistenciaRepository asistenciaRepository = new AsistenciaRepositoryImpl();
+        CarreraRepository carreraRepository = new CarreraRepositoryImpl();
 
         // 2. Services (logica de negocio pura, reciben sus repositorios)
         AlumnoService alumnoService = new AlumnoServiceImpl(alumnoRepository);
@@ -75,6 +82,7 @@ public class Main {
         NotaService notaService = new NotaServiceImpl(comisionRepository);
         AsistenciaService asistenciaService = new AsistenciaServiceImpl(
                 comisionRepository, asistenciaRepository);
+        CarreraService carreraService = new CarreraServiceImpl(carreraRepository, materiaRepository);
 
         // 3. Controladores delgados (capa de orquestacion, reciben su service)
         AlumnoController alumnoController = new AlumnoController(alumnoService);
@@ -83,6 +91,7 @@ public class Main {
         ComisionController comisionController = new ComisionController(comisionService);
         NotaController notaController = new NotaController(notaService);
         AsistenciaController asistenciaController = new AsistenciaController(asistenciaService);
+        CarreraController carreraController = new CarreraController(carreraService);
 
         // 4. Vistas (capa de presentacion, reciben sus controladores)
         AlumnoView alumnoView = new AlumnoView(alumnoController);
@@ -91,10 +100,12 @@ public class Main {
         InscripcionView inscripcionView = new InscripcionView(comisionController);
         NotaView notaView = new NotaView(notaController, comisionController);
         AsistenciaView asistenciaView = new AsistenciaView(asistenciaController, comisionController);
+        CarreraView carreraView = new CarreraView(carreraController);
 
         // 5. Menu principal
         MenuPrincipalView menuPrincipalView = new MenuPrincipalView(
-                alumnoView, profesorView, materiaView, inscripcionView, notaView, asistenciaView);
+                alumnoView, profesorView, materiaView, inscripcionView, notaView,
+                asistenciaView, carreraView);
         menuPrincipalView.mostrar();
     }
 }

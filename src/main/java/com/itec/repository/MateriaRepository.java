@@ -22,6 +22,9 @@ public interface MateriaRepository {
     /** Indica si ya existe una materia registrada con ese nombre. */
     boolean existeNombre(String nombre);
 
+    /** Elimina la materia con ese nombre de la coleccion. Devuelve true si existia. */
+    boolean eliminar(String nombre);
+
     /** Devuelve todas las materias como una lista nueva (copia de la coleccion). */
     List<Materia> obtenerTodos();
 }

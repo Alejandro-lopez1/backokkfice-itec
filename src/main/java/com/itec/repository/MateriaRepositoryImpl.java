@@ -38,6 +38,11 @@ public class MateriaRepositoryImpl implements MateriaRepository {
     }
 
     @Override
+    public boolean eliminar(String nombre) {
+        return MATERIAS.remove(nombre) != null;
+    }
+
+    @Override
     public List<Materia> obtenerTodos() {
         return new ArrayList<>(MATERIAS.values());
     }

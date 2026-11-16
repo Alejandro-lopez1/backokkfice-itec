@@ -4,19 +4,22 @@ package com.itec.view;
  * Menu principal de la aplicacion por consola.
  * <p>
  * Se repite hasta que el usuario elige salir. Delega a las vistas
- * de cada modulo (alumnos, profesores, inscripciones y notas).
+ * de cada modulo (alumnos, profesores, materias, inscripciones y notas).
  */
 public class MenuPrincipalView {
 
     private final AlumnoView alumnoView;
     private final ProfesorView profesorView;
+    private final MateriaView materiaView;
     private final InscripcionView inscripcionView;
     private final NotaView notaView;
 
     public MenuPrincipalView(AlumnoView alumnoView, ProfesorView profesorView,
-                             InscripcionView inscripcionView, NotaView notaView) {
+                             MateriaView materiaView, InscripcionView inscripcionView,
+                             NotaView notaView) {
         this.alumnoView = alumnoView;
         this.profesorView = profesorView;
+        this.materiaView = materiaView;
         this.inscripcionView = inscripcionView;
         this.notaView = notaView;
     }
@@ -31,8 +34,9 @@ public class MenuPrincipalView {
             System.out.println("############################");
             System.out.println("1. Gestion de Alumnos");
             System.out.println("2. Gestion de Profesores");
-            System.out.println("3. Comisiones e Inscripciones");
-            System.out.println("4. Notas");
+            System.out.println("3. Gestion de Materias");
+            System.out.println("4. Comisiones e Inscripciones");
+            System.out.println("5. Notas");
             System.out.println("0. Salir");
             int eleccion = leerOpcion("Seleccione una opcion: ");
 
@@ -44,9 +48,12 @@ public class MenuPrincipalView {
                     profesorView.mostrarMenuProfesores();
                     break;
                 case 3:
-                    inscripcionView.mostrarMenuInscripciones();
+                    materiaView.mostrarMenuMaterias();
                     break;
                 case 4:
+                    inscripcionView.mostrarMenuInscripciones();
+                    break;
+                case 5:
                     notaView.mostrarMenuNotas();
                     break;
                 case 0:

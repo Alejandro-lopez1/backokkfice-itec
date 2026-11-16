@@ -2,42 +2,26 @@ package com.itec.repository;
 
 import com.itec.model.Materia;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Repositorio en memoria de materias.
+ * Contrato del repositorio de materias (patron Interface-Impl).
  * <p>
- * Simula una base de datos: la coleccion es static y se inicializa al cargar
- * la clase, por lo que los datos persisten durante toda la ejecucion.
+ * Las implementaciones concretas (MateriaRepositoryImpl) deciden donde
+ * se guardan los datos; el resto del sistema depende solo de esta interfaz.
  * Clave: nombre de la materia.
  */
-public class MateriaRepository {
-
-    private static final Map<String, Materia> MATERIAS = new HashMap<>();
-
-    private MateriaRepository() {
-    }
+public interface MateriaRepository {
 
     /** Guarda (o actualiza) una materia usando su nombre como clave. */
-    public static void guardar(Materia materia) {
-        MATERIAS.put(materia.getNombre(), materia);
-    }
+    void guardar(Materia materia);
 
     /** Devuelve la materia con ese nombre, o null si no existe. */
-    public static Materia buscarPorNombre(String nombre) {
-        return MATERIAS.get(nombre);
-    }
+    Materia buscarPorNombre(String nombre);
 
     /** Indica si ya existe una materia registrada con ese nombre. */
-    public static boolean existeNombre(String nombre) {
-        return MATERIAS.containsKey(nombre);
-    }
+    boolean existeNombre(String nombre);
 
     /** Devuelve todas las materias como una lista nueva (copia de la coleccion). */
-    public static List<Materia> obtenerTodos() {
-        return new ArrayList<>(MATERIAS.values());
-    }
+    List<Materia> obtenerTodos();
 }

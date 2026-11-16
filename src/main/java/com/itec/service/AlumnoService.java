@@ -1,88 +1,30 @@
 package com.itec.service;
 
 import com.itec.model.Alumno;
-import com.itec.repository.AlumnoRepository;
 
 /**
- * Servicio de alumnos: logica de negocio y validaciones.
+ * Contrato del servicio de alumnos (patron Interface-Impl).
  * <p>
- * Interactua directamente con el AlumnoRepository. No imprime en consola
- * ni usa Scanner: devuelve resultados y mensajes para que la Vista los presente.
+ * La logica de negocio vive en AlumnoServiceImpl; los controladores y el
+ * resto del sistema dependen solo de esta interfaz.
  */
-public class AlumnoService {
+public interface AlumnoService {
 
     /** Mensajes de resultado para la Vista. */
-    public static final String MSG_CREADO = "Alumno creado con exito";
-    public static final String MSG_DNI_DUPLICADO = "ERROR: DNI ya registrado";
-    public static final String MSG_MAIL_INVALIDO = "ERROR: mail invalido (debe contener '@')";
-    public static final String MSG_DATOS_OBLIGATORIOS = "ERROR: nombre, apellido y DNI son obligatorios";
-    public static final String MSG_NO_ENCONTRADO = "ERROR: no existe un alumno con ese DNI";
-    public static final String MSG_YA_INACTIVO = "ERROR: el alumno ya se encuentra inactivo";
-    public static final String MSG_DADO_DE_BAJA = "Alumno dado de baja (baja logica)";
+    String MSG_CREADO = "Alumno creado con exito";
+    String MSG_DNI_DUPLICADO = "ERROR: DNI ya registrado";
+    String MSG_MAIL_INVALIDO = "ERROR: mail invalido (debe contener '@')";
+    String MSG_DATOS_OBLIGATORIOS = "ERROR: nombre, apellido y DNI son obligatorios";
+    String MSG_NO_ENCONTRADO = "ERROR: no existe un alumno con ese DNI";
+    String MSG_YA_INACTIVO = "ERROR: el alumno ya se encuentra inactivo";
+    String MSG_DADO_DE_BAJA = "Alumno dado de baja (baja logica)";
 
-    /**
-     * Crea y guarda un alumno nuevo.
-     *
-     * @return mensaje de exito o de error para mostrar por consola.
-     */
-    public String crearAlumno(String nombre, String apellido, String dni, String mail, String telefono) {
-        nombre = normalizar(nombre);
-        apellido = normalizar(apellido);
-        dni = normalizar(dni);
-        mail = normalizar(mail);
-        telefono = normalizar(telefono);
+    /** Crea y guarda un alumno nuevo. Devuelve mensaje de exito o de error. */
+    String crearAlumno(String nombre, String apellido, String dni, String mail, String telefono);
 
-        if (nombre == null || apellido == null || dni == null) {
-            return MSG_DATOS_OBLIGATORIOS;
-        }
-        if (AlumnoRepository.existeDni(dni)) {
-            return MSG_DNI_DUPLICADO;
-        }
-        if (mail == null || !mail.contains("@")) {
-            return MSG_MAIL_INVALIDO;
-        }
+    /** Busca un alumno por DNI. Devuelve el Alumno, o null si no existe. */
+    Alumno buscarAlumno(String dni);
 
-        Alumno alumno = new Alumno(nombre, apellido, dni, mail, telefono, true);
-        AlumnoRepository.guardar(alumno);
-        return MSG_CREADO;
-    }
-
-    /**
-     * Busca un alumno por DNI.
-     *
-     * @return el Alumno, o null si no existe.
-     */
-    public Alumno buscarAlumno(String dni) {
-        if (normalizar(dni) == null) {
-            return null;
-        }
-        return AlumnoRepository.buscarPorDni(normalizar(dni));
-    }
-
-    /**
-     * Da de baja logicamente a un alumno (activo = false).
-     * No borra el registro: solo lo desactiva.
-     *
-     * @return mensaje de exito o de error para mostrar por consola.
-     */
-    public String darDeBajaLogica(String dni) {
-        Alumno alumno = buscarAlumno(dni);
-        if (alumno == null) {
-            return MSG_NO_ENCONTRADO;
-        }
-        if (!alumno.isActivo()) {
-            return MSG_YA_INACTIVO;
-        }
-        alumno.setActivo(false);
-        return MSG_DADO_DE_BAJA;
-    }
-
-    /** Quita espacios de los extremos; devuelve null si queda vacio. */
-    private String normalizar(String valor) {
-        if (valor == null) {
-            return null;
-        }
-        String limpio = valor.trim();
-        return limpio.isEmpty() ? null : limpio;
-    }
+    /** Da de baja logicamente a un alumno (activo = false). */
+    String darDeBajaLogica(String dni);
 }

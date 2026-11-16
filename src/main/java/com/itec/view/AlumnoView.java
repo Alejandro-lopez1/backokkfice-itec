@@ -26,7 +26,8 @@ public class AlumnoView {
             System.out.println("1. Crear Alumno");
             System.out.println("2. Buscar Alumno");
             System.out.println("3. Dar de Baja");
-            System.out.println("4. Volver al menu principal");
+            System.out.println("4. Listar todos los alumnos");
+            System.out.println("5. Volver al menu principal");
             opcion = leerOpcion("Seleccione una opcion: ");
 
             switch (opcion) {
@@ -40,12 +41,15 @@ public class AlumnoView {
                     darDeBaja();
                     break;
                 case 4:
+                    listarAlumnos();
+                    break;
+                case 5:
                     System.out.println("Volviendo al menu principal...");
                     break;
                 default:
                     System.out.println("ERROR: opcion invalida");
             }
-        } while (opcion != 4);
+        } while (opcion != 5);
     }
 
     private void crearAlumno() {
@@ -78,6 +82,23 @@ public class AlumnoView {
 
         String resultado = controller.darDeBajaLogica(dni);
         System.out.println(resultado);
+    }
+
+    /** Lista todos los alumnos: DNI, nombre completo, mail y estado. */
+    private void listarAlumnos() {
+        System.out.println("--- Alumnos registrados ---");
+        java.util.List<Alumno> alumnos = controller.listarTodos();
+        if (alumnos.isEmpty()) {
+            System.out.println("(no hay alumnos registrados)");
+            return;
+        }
+        for (Alumno alumno : alumnos) {
+            String estado = alumno.isActivo() ? "ACTIVO" : "INACTIVO";
+            System.out.println("- DNI " + alumno.getDni()
+                    + " | " + alumno.getApellido() + ", " + alumno.getNombre()
+                    + " | " + alumno.getMail()
+                    + " | " + estado);
+        }
     }
 
     /** Lee un numero de opcion; si la entrada no es numerica devuelve -1. */

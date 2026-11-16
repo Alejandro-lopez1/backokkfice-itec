@@ -50,6 +50,11 @@ public class AlumnoServiceImpl implements AlumnoService {
     }
 
     @Override
+    public java.util.List<Alumno> listarTodos() {
+        return repository.obtenerTodos();
+    }
+
+    @Override
     public String darDeBajaLogica(String dni) {
         Alumno alumno = buscarAlumno(dni);
         if (alumno == null) {

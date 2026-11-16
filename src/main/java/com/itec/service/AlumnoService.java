@@ -25,6 +25,9 @@ public interface AlumnoService {
     /** Busca un alumno por DNI. Devuelve el Alumno, o null si no existe. */
     Alumno buscarAlumno(String dni);
 
+    /** Devuelve todos los alumnos registrados (para listados de la Vista). */
+    java.util.List<Alumno> listarTodos();
+
     /** Da de baja logicamente a un alumno (activo = false). */
     String darDeBajaLogica(String dni);
 }

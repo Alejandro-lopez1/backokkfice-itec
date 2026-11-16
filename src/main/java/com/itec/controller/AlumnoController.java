@@ -31,6 +31,11 @@ public class AlumnoController {
         return service.buscarAlumno(dni);
     }
 
+    /** Delega en el Service el listado de todos los alumnos. */
+    public java.util.List<Alumno> listarTodos() {
+        return service.listarTodos();
+    }
+
     /** Delega en el Service la baja logica. */
     public String darDeBajaLogica(String dni) {
         return service.darDeBajaLogica(dni);

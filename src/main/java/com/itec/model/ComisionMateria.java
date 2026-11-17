@@ -17,9 +17,11 @@ public class ComisionMateria {
     private Cuatrimestre cuatrimestre;
     private Profesor profesor;
     private List<AlumnoInscripto> alumnosInscriptos;
+    private List<HorarioClase> horarios;
 
     public ComisionMateria() {
         this.alumnosInscriptos = new ArrayList<>();
+        this.horarios = new ArrayList<>();
     }
 
     public ComisionMateria(Materia materia, Cuatrimestre cuatrimestre, Profesor profesor) {
@@ -27,6 +29,7 @@ public class ComisionMateria {
         this.cuatrimestre = cuatrimestre;
         this.profesor = profesor;
         this.alumnosInscriptos = new ArrayList<>();
+        this.horarios = new ArrayList<>();
     }
 
     public int getId() {
@@ -69,6 +72,14 @@ public class ComisionMateria {
         this.alumnosInscriptos = alumnosInscriptos;
     }
 
+    public List<HorarioClase> getHorarios() {
+        return horarios;
+    }
+
+    public void setHorarios(List<HorarioClase> horarios) {
+        this.horarios = horarios;
+    }
+
     @Override
     public String toString() {
         return "ComisionMateria{"
@@ -79,6 +90,7 @@ public class ComisionMateria {
                     ? profesor.getApellido() + ", " + profesor.getNombre()
                     : "null")
                 + ", inscriptos=" + alumnosInscriptos.size()
+                + ", horarios=" + horarios.size()
                 + '}';
     }
 

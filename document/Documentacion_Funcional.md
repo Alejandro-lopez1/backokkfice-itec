@@ -70,7 +70,7 @@ estado activo/inactivo (baja lógica) y validaciones de datos de contacto.
   - Nombre, apellido y DNI son obligatorios (se recortan espacios; vacío =
     faltante) → `ERROR: nombre, apellido y DNI son obligatorios`.
   - DNI **único** en el padrón → `ERROR: DNI ya registrado`.
-  - Mail obligatorio y debe contener `@` → `ERROR: mail invalido`.
+  - Mail obligatorio y debe contener `@` → `ERROR: mail invalido (debe contener '@')`.
   - Teléfono opcional.
   - El alumno se crea **activo** por defecto.
 - **Gherkin**:
@@ -90,7 +90,7 @@ Escenario: DNI duplicado
 
 Escenario: mail invalido
   CUANDO intento crear un alumno con mail sin "@"
-  ENTONCES el sistema responde "ERROR: mail invalido"
+  ENTONCES el sistema responde "ERROR: mail invalido (debe contener '@')"
 ```
 
 - **Casos de prueba**:
@@ -99,14 +99,14 @@ Escenario: mail invalido
 |---|---|---|
 | ALU-TC01 | Menú 1 → 1: nombre, apellido, DNI nuevo, mail con `@` | "Alumno creado con exito" |
 | ALU-TC02 | Repetir alta con DNI `40123456` (sembrado) | "ERROR: DNI ya registrado" |
-| ALU-TC03 | Alta con mail `juanmail` (sin `@`) | "ERROR: mail invalido" |
+| ALU-TC03 | Alta con mail `juanmail` (sin `@`) | "ERROR: mail invalido (debe contener '@')" |
 | ALU-TC04 | Alta con apellido vacío (solo Enter) | "ERROR: nombre, apellido y DNI son obligatorios" |
 
 **US-ALU-02 — Búsqueda por DNI**
 - *Como* secretaría, *quiero* buscar un alumno por su DNI, *para* consultar sus
   datos puntuales.
 - **Prioridad**: Alta.
-- **Reglas de negocio**: DNI obligatorio; si no existe → `ERROR: alumno no encontrado`.
+- **Reglas de negocio**: DNI obligatorio; si no existe → `ERROR: no existe un alumno con ese DNI`.
 - **Gherkin**:
 
 ```gherkin
@@ -117,7 +117,7 @@ Escenario: busqueda exitosa
 
 Escenario: busqueda inexistente
   CUANDO busco el DNI "99999999"
-  ENTONCES el sistema responde "ERROR: alumno no encontrado"
+  ENTONCES el sistema responde "ERROR: no existe un alumno con ese DNI"
 ```
 
 - **Casos de prueba**:
@@ -125,7 +125,7 @@ Escenario: busqueda inexistente
 | ID | Pasos | Resultado esperado |
 |---|---|---|
 | ALU-TC05 | Menú 1 → 2 → DNI `40123456` | Datos de Juan Perez, ACTIVO |
-| ALU-TC06 | Menú 1 → 2 → DNI `99999999` | "ERROR: alumno no encontrado" |
+| ALU-TC06 | Menú 1 → 2 → DNI `99999999` | "ERROR: no existe un alumno con ese DNI" |
 
 **US-ALU-03 — Listado del padrón**
 - *Como* secretaría, *quiero* listar todos los alumnos, *para* generar
@@ -154,7 +154,7 @@ Escenario: listado completo
 - **Prioridad**: Alta.
 - **Reglas de negocio**:
   - Baja **lógica**: `activo = false`; nunca se borra el registro.
-  - Alumno inexistente → `ERROR: alumno no encontrado`.
+  - Alumno inexistente → `ERROR: no existe un alumno con ese DNI`.
   - Doble baja → `ERROR: el alumno ya se encuentra inactivo`.
 - **Gherkin**:
 
@@ -162,7 +162,7 @@ Escenario: listado completo
 Escenario: baja exitosa
   DADO un alumno ACTIVO
   CUANDO solicito su baja
-  ENTONCES el sistema responde "Alumno dado de baja"
+  ENTONCES el sistema responde "Alumno dado de baja (baja logica)"
   Y su estado pasa a INACTIVO sin eliminarse
 
 Escenario: doble baja
@@ -175,7 +175,7 @@ Escenario: doble baja
 
 | ID | Pasos | Resultado esperado |
 |---|---|---|
-| ALU-TC08 | Menú 1 → 3 → DNI de un alumno activo | "Alumno dado de baja" y estado INACTIVO en el listado |
+| ALU-TC08 | Menú 1 → 3 → DNI de un alumno activo | "Alumno dado de baja (baja logica)" y estado INACTIVO en el listado |
 | ALU-TC09 | Repetir baja sobre el mismo alumno | "ERROR: el alumno ya se encuentra inactivo" |
 
 **US-ALU-05 — Modificación de alumno**
@@ -188,7 +188,7 @@ Escenario: doble baja
   - Alumno inexistente → `ERROR: no existe un alumno con ese DNI`.
   - Nombre y apellido obligatorios (trim; vacío = faltante) →
     `ERROR: nombre, apellido y DNI son obligatorios`.
-  - Mail con `@` → `ERROR: mail invalido (debe contener '@')`.
+  - Mail con `@` → `ERROR: mail invalido (debe contener '@') (debe contener '@')`.
   - Teléfono opcional. Se modifican los datos del **mismo objeto**
     (sin re-claveo: la clave no cambia).
 - **Gherkin**:
@@ -206,7 +206,7 @@ Escenario: alumno inexistente
 
 Escenario: mail invalido en modificacion
   CUANDO intento modificar con un mail sin "@"
-  ENTONCES el sistema responde "ERROR: mail invalido (debe contener '@')"
+  ENTONCES el sistema responde "ERROR: mail invalido (debe contener '@') (debe contener '@')"
   Y los datos del alumno quedan sin cambios
 ```
 
@@ -217,7 +217,7 @@ Escenario: mail invalido en modificacion
 | ALU-TC10 | Menú 1 → 5 → DNI `40123456` + datos válidos | "Alumno modificado con exito" |
 | ALU-TC11 | Verificar por búsqueda (menú 1 → 2) | Datos actualizados bajo el mismo DNI |
 | ALU-TC12 | Modificar DNI `99999999` | "ERROR: no existe un alumno con ese DNI" |
-| ALU-TC13 | Modificar con mail sin `@` | "ERROR: mail invalido (debe contener '@')" |
+| ALU-TC13 | Modificar con mail sin `@` | "ERROR: mail invalido (debe contener '@') (debe contener '@')" |
 
 ---
 
@@ -254,19 +254,19 @@ Escenario: DNI duplicado
 |---|---|---|
 | PROF-TC01 | Menú 2 → 1: datos nuevos válidos | "Profesor creado con exito" |
 | PROF-TC02 | Alta con DNI `20111222` (sembrado) | "ERROR: DNI ya registrado" |
-| PROF-TC03 | Alta con mail sin `@` | "ERROR: mail invalido" |
+| PROF-TC03 | Alta con mail sin `@` | "ERROR: mail invalido (debe contener '@')" |
 
 **US-PROF-02 — Búsqueda por DNI**
 - *Como* coordinación, *quiero* buscar un docente por DNI, *para* verificar sus
   datos y estado.
 - **Prioridad**: Alta.
-- **Reglas de negocio**: inexistente → `ERROR: profesor no encontrado`.
+- **Reglas de negocio**: inexistente → `ERROR: no existe un profesor con ese DNI`.
 - **Casos de prueba**:
 
 | ID | Pasos | Resultado esperado |
 |---|---|---|
 | PROF-TC04 | Menú 2 → 2 → DNI `20111222` | Datos de Ana Rodriguez, ACTIVO |
-| PROF-TC05 | Menú 2 → 2 → DNI `99999999` | "ERROR: profesor no encontrado" |
+| PROF-TC05 | Menú 2 → 2 → DNI `99999999` | "ERROR: no existe un profesor con ese DNI" |
 
 **US-PROF-03 — Baja lógica**
 - *Como* coordinación, *quiero* dar de baja un docente, *para* que no pueda ser
@@ -278,7 +278,7 @@ Escenario: DNI duplicado
 
 | ID | Pasos | Resultado esperado |
 |---|---|---|
-| PROF-TC06 | Menú 2 → 3 → DNI activo | "Profesor dado de baja" |
+| PROF-TC06 | Menú 2 → 3 → DNI activo | "Profesor dado de baja (baja logica)" |
 | PROF-TC07 | Repetir la baja | "ERROR: el profesor ya se encuentra inactivo" |
 
 **US-PROF-04 — Listado de profesores**
@@ -332,7 +332,7 @@ Escenario: profesor inexistente
 | PROF-TC09 | Menú 2 → 5 → DNI `20111222` + datos válidos | "Profesor modificado con exito" |
 | PROF-TC10 | Verificar por búsqueda (menú 2 → 2) | Datos actualizados bajo el mismo DNI |
 | PROF-TC11 | Modificar DNI `99999999` | "ERROR: no existe un profesor con ese DNI" |
-| PROF-TC12 | Modificar con mail sin `@` | "ERROR: mail invalido (debe contener '@')" |
+| PROF-TC12 | Modificar con mail sin `@` | "ERROR: mail invalido (debe contener '@') (debe contener '@')" |
 
 ---
 
@@ -347,7 +347,7 @@ la relación reflexiva de materias correlativas y el re-claveo al renombrar.
 - **Prioridad**: Alta.
 - **Reglas de negocio** (`MateriaServiceImpl.crearMateria`):
   - Nombre obligatorio (trim; vacío = faltante).
-  - Año `>= 1` y cuatrimestre `1` o `2` → `ERROR: datos invalidos`.
+  - Año `>= 1` y cuatrimestre `1` o `2` → `ERROR: el anio debe ser 1 o mayor, y el cuatrimestre 1 o 2`.
   - Nombre **único** (clave del repositorio) → `ERROR: ya existe una materia con ese nombre`.
   - Se crea **activa** por defecto, sin correlativas.
 - **Gherkin**:
@@ -366,7 +366,7 @@ Escenario: nombre duplicado
 
 Escenario: datos invalidos
   CUANDO la creo con cuatrimestre 3
-  ENTONCES el sistema responde "ERROR: datos invalidos"
+  ENTONCES el sistema responde "ERROR: el anio debe ser 1 o mayor, y el cuatrimestre 1 o 2"
 ```
 
 - **Casos de prueba**:
@@ -375,7 +375,7 @@ Escenario: datos invalidos
 |---|---|---|
 | MAT-TC01 | Menú 3 → 1: nombre nuevo, año 1, cuat 1 | "Materia creada con exito" |
 | MAT-TC02 | Alta con nombre `Programacion I` | "ERROR: ya existe una materia con ese nombre" |
-| MAT-TC03 | Alta con cuatrimestre `3` | "ERROR: datos invalidos" |
+| MAT-TC03 | Alta con cuatrimestre `3` | "ERROR: el anio debe ser 1 o mayor, y el cuatrimestre 1 o 2" |
 
 **US-MAT-02 — Búsqueda y listado**
 - *Como* coordinación, *quiero* buscar una materia por nombre y listar todas,
@@ -395,7 +395,7 @@ Escenario: datos invalidos
   materia, *para* corregir la malla sin perder sus relaciones.
 - **Prioridad**: Media.
 - **Reglas de negocio** (`MateriaServiceImpl.modificarMateria`):
-  - La materia original debe existir → `ERROR: materia no encontrada`.
+  - La materia original debe existir → `ERROR: no existe una materia con ese nombre`.
   - **Enter sin texto en el nombre = mantener el nombre actual**.
   - Año/cuatrimestre validados igual que en el alta.
   - Si cambia el nombre, el nuevo no puede chocar con **otra** materia
@@ -436,7 +436,7 @@ Escenario: colision de nombre
 
 | ID | Pasos | Resultado esperado |
 |---|---|---|
-| MAT-TC09 | Menú 3 → 3 → materia activa | "Materia dada de baja"; aparece INACTIVA en el listado |
+| MAT-TC09 | Menú 3 → 3 → materia activa | "Materia dada de baja (baja logica)"; aparece INACTIVA en el listado |
 | MAT-TC10 | Repetir la baja | "ERROR: la materia ya se encuentra inactiva" |
 
 **US-MAT-05 — Agregar correlativa**
@@ -444,10 +444,10 @@ Escenario: colision de nombre
   modelar la secuencia académica de la malla.
 - **Prioridad**: Alta.
 - **Reglas de negocio** (`MateriaServiceImpl.agregarCorrelativa` + `Materia.agregarCorrelativa`):
-  - Ambas materias deben existir → `ERROR: materia no encontrada`.
+  - Ambas materias deben existir → `ERROR: no existe una materia con ese nombre`.
   - **Relación reflexiva**: una materia no puede ser correlativa de sí misma →
     `ERROR: una materia no puede ser correlativa de si misma`.
-  - No se admiten duplicados → `ERROR: esa correlativa ya esta asociada`.
+  - No se admiten duplicados → `ERROR: esa materia ya figura como correlativa`.
   - La mutación se hace por el método encapsulado del modelo (copia defensiva
     garantiza lista mutable).
 - **Gherkin**:
@@ -472,8 +472,8 @@ Escenario: autorreferencia
 |---|---|---|
 | MAT-TC11 | Menú 3 → 5: `Redes de Computadoras` ← `Programacion II` | "Correlativa agregada con exito" |
 | MAT-TC12 | Agregar `Programacion I` de sí misma | "ERROR: una materia no puede ser correlativa de si misma" |
-| MAT-TC13 | Repetir MAT-TC11 | "ERROR: esa correlativa ya esta asociada" |
-| MAT-TC14 | Correlativa con nombre inexistente | "ERROR: materia no encontrada" |
+| MAT-TC13 | Repetir MAT-TC11 | "ERROR: esa materia ya figura como correlativa" |
+| MAT-TC14 | Correlativa con nombre inexistente | "ERROR: no existe una materia con ese nombre" |
 
 ---
 
@@ -487,13 +487,13 @@ con ID autoincremental, y inscripción de alumnos con estado inicial REGULAR.
   programar el dictado de una materia a cargo de un docente.
 - **Prioridad**: Alta.
 - **Reglas de negocio** (`ComisionServiceImpl.crearComision`):
-  - La materia debe existir → `ERROR: materia inexistente` y estar
+  - La materia debe existir → `ERROR: no existe una materia con ese nombre` y estar
     **activa** → `ERROR: la materia esta inactiva`.
   - El profesor debe existir → `ERROR: profesor inexistente` y estar
     **activo** → `ERROR: el profesor esta inactivo`.
   - Fechas: inicio y fin obligatorias y `fin >= inicio` → `ERROR: fechas invalidas`.
   - **Anti-duplicado**: no se admite otra comisión con la misma materia,
-    profesor y cuatrimestre (año/número) → `ERROR: ya existe esa comision`.
+    profesor y cuatrimestre (año/número) → `ERROR: ya existe una comision igual`.
   - El ID lo asigna el repositorio (contador autoincremental) y se informa al
     crear: `Comision creada con exito (ID: n)`.
 - **Gherkin**:
@@ -516,7 +516,7 @@ Escenario: materia inactiva
 | ID | Pasos | Resultado esperado |
 |---|---|---|
 | COM-TC01 | Menú 4 → 1: materia, profesor y fechas válidas | "Comision creada con exito (ID: n)" |
-| COM-TC02 | Repetir la misma comisión | "ERROR: ya existe esa comision" |
+| COM-TC02 | Repetir la misma comisión | "ERROR: ya existe una comision igual" |
 | COM-TC03 | Crear con materia inactiva | "ERROR: la materia esta inactiva" |
 | COM-TC04 | Crear con profesor inactivo | "ERROR: el profesor esta inactivo" |
 | COM-TC05 | Fechas fin anteriores a inicio | "ERROR: fechas invalidas" |
@@ -529,7 +529,7 @@ Escenario: materia inactiva
 - **Reglas de negocio** (`ComisionServiceImpl.inscribirAlumno`):
   - El alumno debe existir → `ERROR: alumno inexistente` y estar
     **activo** → `ERROR: el alumno esta inactivo`.
-  - La comisión debe existir → `ERROR: comision inexistente`.
+  - La comisión debe existir → `ERROR: no existe una comision con ese ID`.
   - **Anti-duplicado**: no re-inscripción en la misma comisión →
     `ERROR: el alumno ya esta inscripto en esa comision`.
   - El inscripto se crea con estado `REGULAR`.
@@ -560,7 +560,7 @@ Escenario: alumno inactivo
 | COM-TC07 | Menú 4 → 3: `40123456` en comisión 1 | "Alumno inscripto con exito (comision ID 1)" |
 | COM-TC08 | Repetir COM-TC07 | "ERROR: el alumno ya esta inscripto en esa comision" |
 | COM-TC09 | Inscribir a `40567890` (Diego, inactivo) | "ERROR: el alumno esta inactivo" |
-| COM-TC10 | Inscribir con ID de comisión inexistente | "ERROR: comision inexistente" |
+| COM-TC10 | Inscribir con ID de comisión inexistente | "ERROR: no existe una comision con ese ID" |
 
 ---
 
@@ -577,7 +577,7 @@ y promoción automática a APROBADO.
   - Tipo de evaluación del enum (`TP`, `PARCIAL`, `RECUPERATORIO`, `FINAL`);
     nulo/inválido → `ERROR: tipo de evaluacion invalido`.
   - Valor entre **0 y 10** → `ERROR: la nota debe estar entre 0 y 10`.
-  - Comisión existente → `ERROR: comision inexistente`.
+  - Comisión existente → `ERROR: no existe una comision con ese ID`.
   - El alumno debe estar **inscripto** en esa comisión →
     `ERROR: el alumno no esta inscripto en esa comision`.
   - Se crean `Examen` (con fecha del día) y `Nota` vinculados al inscripto.
@@ -617,7 +617,7 @@ Escenario: no degradar el estado
 | NOT-TC02 | Cargar PARCIAL `6.5` al mismo alumno | Informe con promedio recalculado; "ya se encontraba APROBADO" |
 | NOT-TC03 | Valor `20` | "ERROR: la nota debe estar entre 0 y 10" |
 | NOT-TC04 | Nota a alumno no inscripto (`40234567` en comisión 1) | "ERROR: el alumno no esta inscripto en esa comision" |
-| NOT-TC05 | Nota con ID de comisión inexistente | "ERROR: comision inexistente" |
+| NOT-TC05 | Nota con ID de comisión inexistente | "ERROR: no existe una comision con ese ID" |
 
 ---
 
@@ -631,7 +631,7 @@ fecha del día, y consulta por comisión.
   controlar la asistencia a la cursada.
 - **Prioridad**: Alta.
 - **Reglas de negocio** (`AsistenciaServiceImpl.registrarAsistencia`):
-  - Comisión existente → `ERROR: comision inexistente`.
+  - Comisión existente → `ERROR: no existe una comision con ese ID`.
   - Alumno **inscripto** en esa comisión →
     `ERROR: el alumno no esta inscripto en esa comision`.
   - Registro **binario**: PRESENTE (`S`) / AUSENTE (`N`); la fecha es
@@ -699,16 +699,16 @@ Materias, con materias compartidas por instancia con el repositorio.
 - **Prioridad**: Alta.
 - **Reglas de negocio** (`crearPlanEstudio`): carrera existente →
   `ERROR: carrera inexistente`; nombre de plan obligatorio; rango
-  `anioFin >= anioInicio` → `ERROR: años invalidos`; nombre de plan único
-  dentro de la carrera → `ERROR: ya existe un plan con ese nombre`. Internamente
+  `anioFin >= anioInicio` → `ERROR: el anio de fin no puede ser anterior al de inicio`; nombre de plan único
+  dentro de la carrera → `ERROR: ya existe un plan con ese nombre en la carrera`. Internamente
   el plan se materializa con vigencia `01/01/anioInicio` a `31/12/anioFin`.
 - **Casos de prueba**:
 
 | ID | Pasos | Resultado esperado |
 |---|---|---|
 | CAR-TC03 | Menú 7 → 2: carrera existente, plan nuevo, 2024–2026 | "Plan de estudio creado con exito" |
-| CAR-TC04 | Plan con anioFin 2020 < anioInicio 2024 | "ERROR: años invalidos" |
-| CAR-TC05 | Plan con nombre repetido en la misma carrera | "ERROR: ya existe un plan con ese nombre" |
+| CAR-TC04 | Plan con anioFin 2020 < anioInicio 2024 | "ERROR: el anio de fin no puede ser anterior al de inicio" |
+| CAR-TC05 | Plan con nombre repetido en la misma carrera | "ERROR: ya existe un plan con ese nombre en la carrera" |
 
 **US-CAR-03 — Asociar materia a plan**
 - *Como* coordinación, *quiero* asociar materias existentes a un plan, *para*
@@ -724,7 +724,7 @@ Materias, con materias compartidas por instancia con el repositorio.
 |---|---|---|
 | CAR-TC06 | Asociar materia existente a un plan | "Materia asociada al plan con exito" |
 | CAR-TC07 | Repetir la asociación | "ERROR: esa materia ya esta asociada al plan" |
-| CAR-TC08 | Materia inexistente | "ERROR: materia inexistente" |
+| CAR-TC08 | Materia inexistente | "ERROR: no existe una materia con ese nombre" |
 
 **US-CAR-04 — Listar carreras con planes**
 - *Como* coordinación, *quiero* un listado jerárquico de carreras y planes,
@@ -809,45 +809,45 @@ anti-duplicado de asistencia por día por inscripto.
 | AUTH-TC03 | Opción 0 finaliza | Salida controlada del programa | Aprobado |
 | ALU-TC01 | Alta de alumno válida | "Alumno creado con exito" | Aprobado |
 | ALU-TC02 | Alta con DNI duplicado | "ERROR: DNI ya registrado" | Aprobado |
-| ALU-TC03 | Alta con mail sin `@` | "ERROR: mail invalido" | Aprobado |
+| ALU-TC03 | Alta con mail sin `@` | "ERROR: mail invalido (debe contener '@')" | Aprobado |
 | ALU-TC04 | Alta con campos obligatorios vacíos | "ERROR: nombre, apellido y DNI son obligatorios" | Aprobado |
 | ALU-TC05 | Búsqueda por DNI existente | Datos completos del alumno | Aprobado |
-| ALU-TC06 | Búsqueda por DNI inexistente | "ERROR: alumno no encontrado" | Aprobado |
+| ALU-TC06 | Búsqueda por DNI inexistente | "ERROR: no existe un alumno con ese DNI" | Aprobado |
 | ALU-TC07 | Listado del padrón | Todos los alumnos con estado (incluye INACTIVO sembrado) | Aprobado |
-| ALU-TC08 | Baja lógica de alumno activo | "Alumno dado de baja"; estado INACTIVO | Aprobado |
+| ALU-TC08 | Baja lógica de alumno activo | "Alumno dado de baja (baja logica)"; estado INACTIVO | Aprobado |
 | ALU-TC09 | Doble baja | "ERROR: el alumno ya se encuentra inactivo" | Aprobado |
 | ALU-TC10 | Modificación de alumno con datos válidos | "Alumno modificado con exito" | Aprobado |
 | ALU-TC11 | Verificación post-modificación por búsqueda | Datos actualizados bajo el mismo DNI | Aprobado |
 | ALU-TC12 | Modificación de DNI inexistente | "ERROR: no existe un alumno con ese DNI" | Aprobado |
-| ALU-TC13 | Modificación con mail sin `@` | "ERROR: mail invalido (debe contener '@')" | Aprobado |
+| ALU-TC13 | Modificación con mail sin `@` | "ERROR: mail invalido (debe contener '@') (debe contener '@')" | Aprobado |
 | PROF-TC01 | Alta de profesor válida | "Profesor creado con exito" | Aprobado |
 | PROF-TC02 | Alta con DNI duplicado | "ERROR: DNI ya registrado" | Aprobado |
-| PROF-TC03 | Alta con mail sin `@` | "ERROR: mail invalido" | Aprobado |
+| PROF-TC03 | Alta con mail sin `@` | "ERROR: mail invalido (debe contener '@')" | Aprobado |
 | PROF-TC04 | Búsqueda por DNI existente | Datos completos del profesor | Aprobado |
-| PROF-TC05 | Búsqueda por DNI inexistente | "ERROR: profesor no encontrado" | Aprobado |
-| PROF-TC06 | Baja lógica de profesor activo | "Profesor dado de baja" | Aprobado |
+| PROF-TC05 | Búsqueda por DNI inexistente | "ERROR: no existe un profesor con ese DNI" | Aprobado |
+| PROF-TC06 | Baja lógica de profesor activo | "Profesor dado de baja (baja logica)" | Aprobado |
 | PROF-TC07 | Doble baja | "ERROR: el profesor ya se encuentra inactivo" | Aprobado |
 | PROF-TC08 | Listado de todos los profesores | DNI, apellido/nombre, mail y estado | Aprobado |
 | PROF-TC09 | Modificación de profesor con datos válidos | "Profesor modificado con exito" | Aprobado |
 | PROF-TC10 | Verificación post-modificación por búsqueda | Datos actualizados bajo el mismo DNI | Aprobado |
 | PROF-TC11 | Modificación de DNI inexistente | "ERROR: no existe un profesor con ese DNI" | Aprobado |
-| PROF-TC12 | Modificación con mail sin `@` | "ERROR: mail invalido (debe contener '@')" | Aprobado |
+| PROF-TC12 | Modificación con mail sin `@` | "ERROR: mail invalido (debe contener '@') (debe contener '@')" | Aprobado |
 | MAT-TC01 | Alta de materia válida | "Materia creada con exito" | Aprobado |
 | MAT-TC02 | Alta con nombre duplicado | "ERROR: ya existe una materia con ese nombre" | Aprobado |
-| MAT-TC03 | Alta con cuatrimestre inválido | "ERROR: datos invalidos" | Aprobado |
+| MAT-TC03 | Alta con cuatrimestre inválido | "ERROR: el anio debe ser 1 o mayor, y el cuatrimestre 1 o 2" | Aprobado |
 | MAT-TC04 | Búsqueda con correlativas | Lista de correlativas mostrada | Aprobado |
 | MAT-TC05 | Listado de todas las materias | Estado y correlativas por materia | Aprobado |
 | MAT-TC06 | Renombrado con re-claveo | Modificada y buscable solo bajo el nombre nuevo | Aprobado |
 | MAT-TC07 | Renombrar a nombre existente | "ERROR: ya existe una materia con ese nombre" | Aprobado |
 | MAT-TC08 | Modificar manteniendo nombre (Enter vacío) | Solo cambian año/cuatrimestre | Aprobado |
-| MAT-TC09 | Baja lógica de materia | "Materia dada de baja" | Aprobado |
+| MAT-TC09 | Baja lógica de materia | "Materia dada de baja (baja logica)" | Aprobado |
 | MAT-TC10 | Doble baja de materia | "ERROR: la materia ya se encuentra inactiva" | Aprobado |
 | MAT-TC11 | Correlativa válida | "Correlativa agregada con exito" | Aprobado |
 | MAT-TC12 | Correlativa de sí misma | "ERROR: una materia no puede ser correlativa de si misma" | Aprobado |
-| MAT-TC13 | Correlativa duplicada | "ERROR: esa correlativa ya esta asociada" | Aprobado |
-| MAT-TC14 | Correlativa inexistente | "ERROR: materia no encontrada" | Aprobado |
+| MAT-TC13 | Correlativa duplicada | "ERROR: esa materia ya figura como correlativa" | Aprobado |
+| MAT-TC14 | Correlativa inexistente | "ERROR: no existe una materia con ese nombre" | Aprobado |
 | COM-TC01 | Crear comisión válida | "Comision creada con exito (ID: n)" | Aprobado |
-| COM-TC02 | Comisión duplicada | "ERROR: ya existe esa comision" | Aprobado |
+| COM-TC02 | Comisión duplicada | "ERROR: ya existe una comision igual" | Aprobado |
 | COM-TC03 | Comisión con materia inactiva | "ERROR: la materia esta inactiva" | Aprobado |
 | COM-TC04 | Comisión con profesor inactivo | "ERROR: el profesor esta inactivo" | Aprobado |
 | COM-TC05 | Fechas incoherentes | "ERROR: fechas invalidas" | Aprobado |
@@ -855,12 +855,12 @@ anti-duplicado de asistencia por día por inscripto.
 | COM-TC07 | Inscripción válida | "Alumno inscripto con exito (comision ID n)" | Aprobado |
 | COM-TC08 | Inscripción duplicada | "ERROR: el alumno ya esta inscripto en esa comision" | Aprobado |
 | COM-TC09 | Inscripción de alumno inactivo | "ERROR: el alumno esta inactivo" | Aprobado |
-| COM-TC10 | Inscripción a comisión inexistente | "ERROR: comision inexistente" | Aprobado |
+| COM-TC10 | Inscripción a comisión inexistente | "ERROR: no existe una comision con ese ID" | Aprobado |
 | NOT-TC01 | Nota 8 promociona | "...El alumno quedo APROBADO (promedio >= 6)" | Aprobado |
 | NOT-TC02 | Segunda nota recalcula promedio | Promedio actualizado sin degradar estado | Aprobado |
 | NOT-TC03 | Nota fuera de rango (20) | "ERROR: la nota debe estar entre 0 y 10" | Aprobado |
 | NOT-TC04 | Nota a no inscripto | "ERROR: el alumno no esta inscripto en esa comision" | Aprobado |
-| NOT-TC05 | Nota a comisión inexistente | "ERROR: comision inexistente" | Aprobado |
+| NOT-TC05 | Nota a comisión inexistente | "ERROR: no existe una comision con ese ID" | Aprobado |
 | ASIS-TC01 | Registrar PRESENTE | "Asistencia registrada con exito (fecha)" | Aprobado |
 | ASIS-TC02 | Registrar AUSENTE | Registro AUSENTE en el listado | Aprobado |
 | ASIS-TC03 | Asistencia a no inscripto | "ERROR: el alumno no esta inscripto en esa comision" | Aprobado |
@@ -869,11 +869,11 @@ anti-duplicado de asistencia por día por inscripto.
 | CAR-TC01 | Alta de carrera válida | "Carrera creada con exito" | Aprobado |
 | CAR-TC02 | Alta de carrera duplicada | "ERROR: ya existe una carrera con ese nombre" | Aprobado |
 | CAR-TC03 | Alta de plan válida | "Plan de estudio creado con exito" | Aprobado |
-| CAR-TC04 | Plan con rango de años inválido | "ERROR: años invalidos" | Aprobado |
-| CAR-TC05 | Plan duplicado en la carrera | "ERROR: ya existe un plan con ese nombre" | Aprobado |
+| CAR-TC04 | Plan con rango de años inválido | "ERROR: el anio de fin no puede ser anterior al de inicio" | Aprobado |
+| CAR-TC05 | Plan duplicado en la carrera | "ERROR: ya existe un plan con ese nombre en la carrera" | Aprobado |
 | CAR-TC06 | Asociación de materia a plan | "Materia asociada al plan con exito" | Aprobado |
 | CAR-TC07 | Asociación duplicada | "ERROR: esa materia ya esta asociada al plan" | Aprobado |
-| CAR-TC08 | Asociación con materia inexistente | "ERROR: materia inexistente" | Aprobado |
+| CAR-TC08 | Asociación con materia inexistente | "ERROR: no existe una materia con ese nombre" | Aprobado |
 | CAR-TC09 | Listado jerárquico Carrera→Plan→Materias | Jerarquía completa con vigencias y correlativas | Aprobado |
 
 **Total: 69 casos de prueba · 69 Aprobados.** Los tres TC de AUTH-01..03

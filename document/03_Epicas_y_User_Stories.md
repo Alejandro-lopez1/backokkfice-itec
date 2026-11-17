@@ -324,13 +324,17 @@ automática a APROBADO.
 - **ID**: US-NOT-03
 - **Título**: Consultar notas por alumno
 - **Como**: DOC / ADM
-- **Quiero**: ver las notas cargadas de un alumno en una comisión
+- **Quiero**: ver las notas cargadas de un alumno en todas sus comisiones
 - **Para**: revisar su desempeño antes de cerrar la cursada
 - **Prioridad**: Media
-- **Dependencias**: US-NOT-01
-- **Reglas de Negocio asociadas**: RN-NOT-04 (historial en `AlumnoInscripto`)
-- **Estado**: **NO IMPLEMENTADA** — `NotaView` solo expone la carga de notas;
-  la consulta puntual queda para Fase 2 (el dato ya existe en el modelo).
+- **Dependencias**: US-NOT-01, US-COM-02
+- **Reglas de Negocio asociadas**: RN-NOT-04 (historial en `AlumnoInscripto`), RN-TRA-01
+- **Estado**: IMPLEMENTADA
+- **Implementación**: `NotaServiceImpl.consultarNotasPorAlumno` · `NotaView`
+  (opción 3). El service recorre las comisiones y devuelve los
+  `AlumnoInscripto` con ese DNI; si no hay coincidencias (incluido el caso
+  de un alumno inexistente en el padrón) retorna lista vacía y la vista
+  muestra `El alumno no tiene notas registradas`.
 
 ---
 
@@ -465,7 +469,7 @@ normativo está en `01_Alcance.md §4`; ninguna tiene código implementado hoy.
 | COM | US-COM-03 Inscribir alumno a comisión | Sí | `service/impl/ComisionServiceImpl.inscribirAlumno` |
 | NOT | US-NOT-01 Cargar nota de examen | Sí | `service/impl/NotaServiceImpl.cargarNota` |
 | NOT | US-NOT-02 Calcular promedio y estado | Sí (automática, dentro de US-NOT-01) | `service/impl/NotaServiceImpl.cargarNota` + `model/AlumnoInscripto.promedioNotas` |
-| NOT | US-NOT-03 Consultar notas por alumno | **No** (Fase 2) | — |
+| NOT | US-NOT-03 Consultar notas por alumno | Sí | `service/impl/NotaServiceImpl.consultarNotasPorAlumno` · `view/NotaView` (opción 3) |
 | ASIS | US-ASIS-01 Registrar asistencia | Sí | `service/impl/AsistenciaServiceImpl.registrarAsistencia` |
 | ASIS | US-ASIS-02 Consultar asistencias por comisión | Sí | `service/impl/AsistenciaServiceImpl.obtenerAsistenciasPorComision` |
 | CAR | US-CAR-01 Crear carrera | Sí | `service/impl/CarreraServiceImpl.crearCarrera` |
@@ -475,7 +479,6 @@ normativo está en `01_Alcance.md §4`; ninguna tiene código implementado hoy.
 | Anexo | US-ASIS-03 a US-ASIS-05 | No (Fase 2) | — |
 | Anexo | US-CAL-03 a US-CAL-06 | No (Fase 2) | — |
 
-**Resumen**: 26 de 27 US del MVP implementadas (US-PROF-04 realizada vía
+**Resumen**: 27 de 27 US del MVP implementadas (US-PROF-04 realizada vía
 creación de comisión; US-NOT-02 automática dentro de la carga de notas;
-US-AUTH-01 ahora con login real por roles, ya no simulada) + 1 no
-implementada (US-NOT-03) + 7 del Anexo como roadmap.
+US-AUTH-01 con login real por roles) + 7 del Anexo como roadmap.

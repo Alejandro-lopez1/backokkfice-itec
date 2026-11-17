@@ -6,9 +6,9 @@
 > aplica, y los mensajes entre comillas son los strings **exactos** que
 > devuelve el sistema (constantes `MSG_*` de los services).
 >
-> Cobertura: las **26 US implementadas del MVP** (incluidas US-AUTH-01 con
+> Cobertura: las **27 US implementadas del MVP** (incluidas US-AUTH-01 con
 > login real por roles, US-PROF-04 vía comisión y US-NOT-02 automática). Para
-> US-NOT-03 y las US del Anexo (Fase 2) no se generan escenarios: ver nota al final.
+> las US del Anexo (Fase 2) no se generan escenarios: ver nota al final.
 
 ---
 
@@ -484,6 +484,28 @@
 - Y muestra `El alumno ya se encontraba APROBADO`
 - Reglas aplicadas: RN-NOT-07
 
+### US-NOT-03 — Consultar notas por alumno
+
+**Escenario 1 — Consulta con notas cargadas**
+- DADO QUE el alumno está inscripto en una o más comisiones y tiene notas cargadas
+- CUANDO el DOC/ADM consulta las notas por su DNI
+- ENTONCES el sistema muestra el nombre completo del alumno con su DNI
+- Y por cada inscripción: comisión (ID y materia), estado de cursada, cada nota con tipo de evaluación, fecha y valor, y el promedio
+- Reglas aplicadas: RN-NOT-04, RN-TRA-01
+
+**Escenario 2 — Inscripción sin notas cargadas**
+- DADO QUE el alumno está inscripto en una comisión pero sin notas
+- CUANDO el DOC/ADM consulta las notas por su DNI
+- ENTONCES el sistema muestra la inscripción con su estado y `(sin notas cargadas)`
+- Reglas aplicadas: RN-NOT-04
+
+**Escenario 3 — Alumno inexistente o sin inscripciones**
+- DADO QUE el DNI no corresponde a ningún inscripto (incluye alumno inexistente en el padrón)
+- CUANDO el DOC/ADM consulta las notas por su DNI
+- ENTONCES el sistema no muestra inscripciones
+- Y presenta `El alumno no tiene notas registradas` (mismo mensaje para ambos casos: un alumno inexistente nunca puede estar inscripto)
+- Reglas aplicadas: RN-NOT-04, RN-ALU-01
+
 ---
 
 ## EPIC-ASIS — Gestión de Asistencia
@@ -626,8 +648,6 @@
 Las siguientes US **no tienen escenarios** porque **no están implementadas**
 (no se generan criterios de aceptación de funcionalidad inexistente):
 
-- **US-NOT-03** (Consultar notas por alumno) — Fase 2; el dato ya existe en
-  `AlumnoInscripto` pero la vista no expone la consulta.
 - **US-ASIS-03, US-ASIS-04, US-ASIS-05 y US-CAL-03 a US-CAL-06** — Anexo,
   roadmap Fase 2 (ver `01_Alcance.md §4` y `03_Epicas_y_User_Stories.md`).
 

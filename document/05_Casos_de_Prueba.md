@@ -108,6 +108,9 @@
 | TC-NOT-04 | Valor fuera de rango | 1. Cargar valor `20`. | `ERROR: la nota debe estar entre 0 y 10`; no se crea el examen. | Aprobado |
 | TC-NOT-05 | Alumno no inscripto | 1. Cargar nota a `40234567` (no inscripto) en comisión 1. | `ERROR: el alumno no esta inscripto en esa comision`. | Aprobado |
 | TC-NOT-06 | Comisión inexistente | 1. Cargar nota con ID de comisión inexistente. | `ERROR: no existe una comision con ese ID`. | Aprobado |
+| TC-NOT-07 | Consulta de notas con notas cargadas | 1. Menú 5 → `3. Consultar notas por alumno` → DNI de un inscripto con notas. | Nombre completo del alumno con su DNI; por cada inscripción: `Comision ID n (materia) - Estado: ...`, cada nota con tipo, fecha y valor, y el `Promedio: X,XX`. | Aprobado |
+| TC-NOT-08 | Consulta de inscripción sin notas | 1. Inscribir a un alumno en una comisión sin cargarle notas. 2. Menú 5 → 3 → su DNI. | La inscripción aparece con su estado y `(sin notas cargadas)`. | Aprobado |
+| TC-NOT-09 | Consulta de alumno inexistente | 1. Menú 5 → 3 → DNI `99999999`. | `El alumno no tiene notas registradas`. | Aprobado |
 
 ## 7. TC-ASIS — Asistencias
 
@@ -143,7 +146,7 @@
 | PROF — Profesores | 8 | 8 | 0 |
 | MAT — Materias y Correlativas | 14 | 14 | 0 |
 | COM — Comisiones e Inscripciones | 10 | 10 | 0 |
-| NOT — Notas | 6 | 6 | 0 |
+| NOT — Notas | 9 | 9 | 0 |
 | ASIS — Asistencias | 5 | 5 | 0 |
 | CAR — Carreras y Planes | 8 | 8 | 0 |
-| **Total** | **71** | **71** | **0** |
+| **Total** | **74** | **74** | **0** |

@@ -6,12 +6,14 @@
 > **exactos** del código (constantes `MSG_*`); los pasos usan la numeración
 > real de los menús de consola, listos para ejecutar en la demo.
 >
-> Datos de referencia sembrados por el `DataSeeder`: alumnos Juan Perez
-> `40123456` (activo) y Diego Torres `40567890` (INACTIVO); profesores Ana
-> Rodriguez `20111222` y Luis Martinez `20222333`; comisiones ID 1
-> (Programacion I) e ID 2 (Base de Datos); materias Programacion I, II,
-> Matematica Discreta, Base de Datos y Redes de Computadoras; carreras
-> Tecnicatura en Programacion y Licenciatura en Sistemas (Plan 2024).
+> Datos de referencia sembrados por el sistema: usuarios admin / admin123
+> (ADMIN), docente / docente123 (DOCENTE) y alumno / alumno123 (ALUMNO);
+> alumnos Juan Perez `40123456` (activo) y Diego Torres `40567890`
+> (INACTIVO); profesores Ana Rodriguez `20111222` y Luis Martinez `20222333`;
+> comisiones ID 1 (Programacion I) e ID 2 (Base de Datos); materias
+> Programacion I, II, Matematica Discreta, Base de Datos y Redes de
+> Computadoras; carreras Tecnicatura en Programacion y Licenciatura en
+> Sistemas (Plan 2024).
 >
 > Estado `Aprobado`: verificado manualmente contra la aplicación real durante
 > el desarrollo. Ningún TC está en `Pendiente` porque la suite cubre solo
@@ -19,13 +21,17 @@
 
 ---
 
-## 1. TC-AUTH — Acceso (login simulado)
+## 1. TC-AUTH — Acceso (login real por roles)
 
 | ID | Descripción | Pasos | Resultado Esperado | Estado |
 |---|---|---|---|---|
-| TC-AUTH-01 | Arranque y menú principal | 1. Ejecutar `.\mvnw.cmd clean compile exec:java`. | Se muestra el menú principal con los 7 módulos + `0. Salir`, sin solicitar credenciales. | Aprobado |
-| TC-AUTH-02 | Opción inválida no corta la sesión | 1. En el menú principal ingresar `9`. 2. Luego ingresar `abc`. | Dos veces `ERROR: opcion invalida`; el menú se reitera. | Aprobado |
-| TC-AUTH-03 | Cierre de sesión | 1. En el menú principal ingresar `0`. | Mensaje de despedida y fin del programa. | Aprobado |
+| TC-AUTH-01 | Login exitoso como ADMIN | 1. Ejecutar `.\mvnw.cmd clean compile exec:java`. 2. Ingresar `admin` y `admin123`. | `Bienvenido, admin (ADMIN)`; el menú principal muestra los 7 módulos del backoffice + `0. Salir`. | Aprobado |
+| TC-AUTH-02 | Login exitoso como DOCENTE | 1. Ejecutar el sistema. 2. Ingresar `docente` y `docente123`. | `Bienvenido, docente (DOCENTE)`; el menú muestra solo `1. Notas`, `2. Asistencias` y `0. Salir`. | Aprobado |
+| TC-AUTH-03 | Login exitoso como ALUMNO | 1. Ejecutar el sistema. 2. Ingresar `alumno` y `alumno123`. | `Bienvenido, alumno (ALUMNO)`; el menú muestra solo `1. Consultar mis datos` (placeholder con aviso de funcionalidad en desarrollo) y `0. Salir`. | Aprobado |
+| TC-AUTH-04 | Credenciales inválidas con reintento | 1. Ejecutar el sistema. 2. Ingresar `admin` y una contraseña errónea. 3. Reintentar con credenciales válidas. | En el fallo: `Credenciales invalidas` y `Intento 1 de 3`; al reintentar bien, la sesión se inicia con el menú del rol. | Aprobado |
+| TC-AUTH-05 | Bloqueo por 3 intentos fallidos | 1. Ejecutar el sistema. 2. Ingresar credenciales inválidas 3 veces seguidas. | Tres veces `Credenciales invalidas` (con `Intento n de 3`); al agotar el 3° intento se muestra `Sesion bloqueada: se agotaron los intentos de acceso` y el programa termina, sin llegar al menú principal. | Aprobado |
+| TC-AUTH-06 | Opción inválida no corta la sesión | 1. Loguearse como `admin`. 2. En el menú principal ingresar `9` y luego `abc`. | Dos veces `ERROR: opcion invalida`; el menú se reitera con la sesión activa. | Aprobado |
+| TC-AUTH-07 | Cierre de sesión | 1. Loguearse con cualquier rol. 2. En el menú principal ingresar la opción Salir (`0`). | `Hasta luego!` y fin del programa (sesión cerrada). | Aprobado |
 
 ## 2. TC-ALU — Alumnos
 
@@ -132,7 +138,7 @@
 
 | Módulo | Total TC | Aprobados | Pendientes |
 |---|---|---|---|
-| AUTH (login simulado) | 3 | 3 | 0 |
+| AUTH (login real por roles) | 7 | 7 | 0 |
 | ALU — Alumnos | 13 | 13 | 0 |
 | PROF — Profesores | 8 | 8 | 0 |
 | MAT — Materias y Correlativas | 14 | 14 | 0 |
@@ -140,4 +146,4 @@
 | NOT — Notas | 6 | 6 | 0 |
 | ASIS — Asistencias | 5 | 5 | 0 |
 | CAR — Carreras y Planes | 8 | 8 | 0 |
-| **Total** | **67** | **67** | **0** |
+| **Total** | **71** | **71** | **0** |

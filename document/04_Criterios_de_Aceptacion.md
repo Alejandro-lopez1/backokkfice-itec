@@ -6,33 +6,63 @@
 > aplica, y los mensajes entre comillas son los strings **exactos** que
 > devuelve el sistema (constantes `MSG_*` de los services).
 >
-> Cobertura: las **26 US implementadas del MVP** (incluidas US-AUTH-01
-> simulada, US-PROF-04 vía comisión y US-NOT-02 automática). Para US-NOT-03 y
-> las US del Anexo (Fase 2) no se generan escenarios: ver nota al final.
+> Cobertura: las **26 US implementadas del MVP** (incluidas US-AUTH-01 con
+> login real por roles, US-PROF-04 vía comisión y US-NOT-02 automática). Para
+> US-NOT-03 y las US del Anexo (Fase 2) no se generan escenarios: ver nota al final.
 
 ---
 
 ## EPIC-AUTH — Gestión de Acceso
 
-### US-AUTH-01 — Iniciar sesión (SIMULADA)
+### US-AUTH-01 — Iniciar sesión
 
-**Escenario 1 — Apertura de sesión de operador**
-- DADO QUE el operador ejecuta el sistema por consola
-- CUANDO la aplicación arranca
-- ENTONCES se muestra el menú principal con los 7 módulos y la opción Salir
-- Y no se solicitan credenciales (sesión única con permisos ADM+DOC unificados)
-- Reglas aplicadas: RN-TRA-05
+**Escenario 1 — Login exitoso como ADMIN (menú completo)**
+- DADO QUE existe la cuenta sembrada admin / admin123 con rol ADMIN
+- CUANDO el usuario ingresa esas credenciales en el login
+- ENTONCES el sistema muestra `Bienvenido, admin (ADMIN)`
+- Y el menú principal presenta los 7 módulos del backoffice (Alumnos, Profesores, Materias, Comisiones e Inscripciones, Notas, Asistencias, Carreras) y la opción Salir
+- Reglas aplicadas: RN-AUTH-01, RN-AUTH-03
 
-**Escenario 2 — Opción inválida no corta la sesión**
-- DADO QUE se muestra el menú principal
-- CUANDO el operador ingresa una opción inexistente o no numérica
-- ENTONCES el sistema muestra `ERROR: opcion invalida`
-- Y reitera el menú principal sin cerrar la sesión
+**Escenario 2 — Login exitoso como DOCENTE (menú filtrado)**
+- DADO QUE existe la cuenta sembrada docente / docente123 con rol DOCENTE
+- CUANDO el usuario ingresa esas credenciales en el login
+- ENTONCES el sistema muestra `Bienvenido, docente (DOCENTE)`
+- Y el menú principal presenta solo Notas, Asistencias y Salir (sin los módulos de gestión del backoffice)
+- Reglas aplicadas: RN-AUTH-01, RN-AUTH-03
 
-**Escenario 3 — Cierre de sesión**
-- DADO QUE se muestra el menú principal
-- CUANDO el operador ingresa `0`
+**Escenario 3 — Login exitoso como ALUMNO (placeholder)**
+- DADO QUE existe la cuenta sembrada alumno / alumno123 con rol ALUMNO
+- CUANDO el usuario ingresa esas credenciales en el login
+- ENTONCES el sistema muestra `Bienvenido, alumno (ALUMNO)`
+- Y el menú principal presenta solo la consulta de sus datos (placeholder con aviso de funcionalidad en desarrollo) y Salir
+- Reglas aplicadas: RN-AUTH-01, RN-AUTH-03
+
+**Escenario 4 — Credenciales inválidas con reintento**
+- DADO QUE se solicita usuario y contraseña en el login
+- CUANDO se ingresan credenciales inexistentes o con contraseña errónea
+- ENTONCES el sistema rechaza el acceso
+- Y muestra `Credenciales invalidas` y `Intento n de 3`
+- Y permite reintentar hasta un máximo de 3 intentos
+- Reglas aplicadas: RN-AUTH-01, RN-AUTH-02
+
+**Escenario 5 — Bloqueo por 3 intentos fallidos**
+- DADO QUE se ingresaron 2 credenciales inválidas consecutivas
+- CUANDO se falla el tercer intento
 - ENTONCES el sistema finaliza la ejecución de forma controlada
+- Y muestra `Sesion bloqueada: se agotaron los intentos de acceso` (sin llegar al menú principal)
+- Reglas aplicadas: RN-AUTH-02
+
+**Escenario 6 — Opción inválida no corta la sesión**
+- DADO QUE el usuario ya está logueado y se muestra su menú principal
+- CUANDO ingresa una opción inexistente o no numérica
+- ENTONCES el sistema muestra `ERROR: opcion invalida`
+- Y reitera el menú sin cerrar la sesión
+
+**Escenario 7 — Cierre de sesión**
+- DADO QUE el usuario ya está logueado y se muestra su menú principal
+- CUANDO ingresa la opción Salir (`0`)
+- ENTONCES el sistema finaliza la ejecución de forma controlada
+- Y cierra la sesión activa
 
 ---
 

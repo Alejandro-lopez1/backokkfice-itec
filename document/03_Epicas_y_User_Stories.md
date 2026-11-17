@@ -16,8 +16,10 @@
 
 ## EPIC-AUTH — Gestión de Acceso
 
-**Descripción**: control de acceso por rol al sistema. En el MVP opera una
-sesión única de operador con permisos ADM+DOC unificados (sin login real).
+**Descripción**: control de acceso por rol al sistema. Al arrancar, el
+programa exige login por consola: usuario y contraseña con máximo 3
+intentos. Una vez autenticado, el menú principal filtra las opciones según
+el rol del usuario logueado.
 
 ### US-AUTH-01 — Iniciar sesión
 
@@ -26,12 +28,16 @@ sesión única de operador con permisos ADM+DOC unificados (sin login real).
 - **Como**: ADM / DOC / ALU
 - **Quiero**: autenticarme con mi rol para acceder solo a las funciones que me corresponden
 - **Para**: proteger la información académica y diferenciar permisos por perfil
-- **Prioridad**: Alta (definida en el enunciado) — **Estado: SIMULADA en el MVP**
+- **Prioridad**: Alta (definida en el enunciado) — **Estado: IMPLEMENTADA**
 - **Dependencias**: ninguna (es el punto de entrada)
-- **Reglas de Negocio asociadas**: RN-TRA-05
-- **Implementación actual**: no existe login. `Main` arranca directamente
-  `MenuPrincipalView`, que asume una sesión única de operador (permisos ADM+DOC
-  unificados). El desdoblamiento real por roles es Fase 2.
+- **Reglas de Negocio asociadas**: RN-AUTH-01, RN-AUTH-02, RN-AUTH-03, RN-TRA-05
+- **Implementación**: `AuthServiceImpl.autenticar` / `AuthView.mostrarLogin`
+  (login con 3 intentos) · `MenuPrincipalView` (menú filtrado por rol) ·
+  `UsuarioRepositoryImpl` (3 cuentas sembradas: admin, docente, alumno)
+- **Alcance actual**: la sesión es única por consola y las 3 cuentas están
+  hardcodeadas en el repositorio (sin alta/edición de usuarios ni
+  contraseñas cifradas). Futuras iteraciones podrían agregar gestión de
+  cuentas, pero el acceso por rol ya es real.
 
 ---
 
@@ -438,7 +444,7 @@ normativo está en `01_Alcance.md §4`; ninguna tiene código implementado hoy.
 
 | Épica | User Story | ¿Implementada? | Módulo del código |
 |---|---|---|---|
-| AUTH | US-AUTH-01 Iniciar sesión | Simulada (sesión única, sin login) | `Main.main` · `view/MenuPrincipalView` |
+| AUTH | US-AUTH-01 Iniciar sesión | Sí (login real por roles) | `service/impl/AuthServiceImpl.autenticar` · `view/AuthView.mostrarLogin` · `view/MenuPrincipalView` (menú por rol) · `repository/impl/UsuarioRepositoryImpl` |
 | ALU | US-ALU-01 Crear alumno | Sí | `service/impl/AlumnoServiceImpl.crearAlumno` |
 | ALU | US-ALU-02 Consultar alumno por DNI | Sí | `service/impl/AlumnoServiceImpl.buscarAlumno` |
 | ALU | US-ALU-03 Modificar alumno | Sí | `service/impl/AlumnoServiceImpl.modificarAlumno` |
@@ -469,6 +475,7 @@ normativo está en `01_Alcance.md §4`; ninguna tiene código implementado hoy.
 | Anexo | US-ASIS-03 a US-ASIS-05 | No (Fase 2) | — |
 | Anexo | US-CAL-03 a US-CAL-06 | No (Fase 2) | — |
 
-**Resumen**: 26 de 27 US del MVP implementadas (US-AUTH-01 simulada; US-PROF-04
-realizada vía creación de comisión; US-NOT-02 automática dentro de la carga de
-notas) + 1 no implementada (US-NOT-03) + 7 del Anexo como roadmap.
+**Resumen**: 26 de 27 US del MVP implementadas (US-PROF-04 realizada vía
+creación de comisión; US-NOT-02 automática dentro de la carga de notas;
+US-AUTH-01 ahora con login real por roles, ya no simulada) + 1 no
+implementada (US-NOT-03) + 7 del Anexo como roadmap.

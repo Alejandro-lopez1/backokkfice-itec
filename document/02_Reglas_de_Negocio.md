@@ -120,11 +120,19 @@
 | RN-TRA-06 | **Normalización de entradas**: los services recortan espacios (`trim`) y tratan vacío como faltante antes de validar | Método `normalizar` en cada `*ServiceImpl` |
 | RN-TRA-07 | **Mensajes de negocio centralizados**: el Service *decide* el resultado y lo devuelve como string; la vista solo lo muestra. Los controllers reexportan las constantes que la vista necesita | Constantes `MSG_*` en cada interfaz de service |
 
+## 9. Reglas de Acceso (AUTH)
+
+| ID | Descripción | Implementación | Mensaje |
+|---|---|---|---|
+| RN-AUTH-01 | **Credenciales válidas**: el username debe existir en el repositorio de usuarios y la contraseña debe coincidir exactamente. Si ambas son correctas se inicia la sesión y se da la bienvenida con el formato `Bienvenido, {username} ({ROL})`; si no, la autenticación devuelve null | `AuthServiceImpl.autenticar` / `AuthView.mostrarLogin` | `Credenciales invalidas` |
+| RN-AUTH-02 | **Máximo 3 intentos de login**: tras 3 credenciales inválidas consecutivas se bloquea la sesión y el programa termina de forma controlada; en cada fallo se informa el intento consumido (`Intento n de 3`) | `AuthView.mostrarLogin` (`MAX_INTENTOS`) | `Sesion bloqueada: se agotaron los intentos de acceso` |
+| RN-AUTH-03 | **Menú filtrado por rol**: el menú principal muestra solo las opciones del rol logueado — ADMIN: todos los módulos del backoffice; DOCENTE: solo Notas y Asistencias; ALUMNO: solo la consulta de sus datos (placeholder) y Salir | `MenuPrincipalView.mostrarMenuAdmin/Docente/Alumno` | — (filtrado por diseño) |
+
 ---
 
 ### Resumen
 
-**69 reglas documentadas**: 8 de Alumnos, 8 de Profesores, 12 de Materias,
+**72 reglas documentadas**: 8 de Alumnos, 8 de Profesores, 12 de Materias,
 12 de Comisiones, 8 de Notas, 4 de Asistencias, 10 de Carreras y Planes,
-y 7 transversales. Cada una es verificable en el código citado y sus
-mensajes coinciden exactamente con las constantes `MSG_*` de los services.
+7 transversales y 3 de Acceso. Cada una es verificable en el código citado
+y sus mensajes coinciden exactamente con las constantes `MSG_*` de los services.

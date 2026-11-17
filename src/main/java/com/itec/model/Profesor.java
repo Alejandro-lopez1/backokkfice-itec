@@ -82,7 +82,7 @@ public class Profesor {
         this.activo = activo;
     }
 
-    /** Comisiones que dicta el profesor (composicion hacia ComisionMateria). */
+    /** Comisiones que dicta el profesor (navegabilidad inversa; el diamante del UML esta en ComisionMateria). */
     public List<ComisionMateria> getComisiones() {
         return comisiones;
     }

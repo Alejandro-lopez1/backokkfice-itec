@@ -62,7 +62,7 @@ public class Cuatrimestre {
         this.fechaFin = fechaFin;
     }
 
-    /** Comisiones que abarca el cuatrimestre (composicion hacia ComisionMateria). */
+    /** Comisiones que abarca el cuatrimestre (navegabilidad inversa; el diamante del UML esta en ComisionMateria). */
     public List<ComisionMateria> getComisiones() {
         return comisiones;
     }

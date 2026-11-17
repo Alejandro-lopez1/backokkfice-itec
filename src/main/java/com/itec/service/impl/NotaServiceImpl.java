@@ -54,6 +54,11 @@ public class NotaServiceImpl implements NotaService {
 
         Examen examen = new Examen(tipo, LocalDate.now(), comision);
         Nota nota = new Nota(valor, examen);
+        // Wiring de las colecciones del UML: la comision agrega el examen
+        // (rol "examenes"), el examen agrega la nota (rol "notas") y el
+        // inscripto conserva su historial (rol "notas").
+        comision.getExamenes().add(examen);
+        examen.getNotas().add(nota);
         inscripto.getNotas().add(nota);
 
         double promedio = inscripto.promedioNotas();

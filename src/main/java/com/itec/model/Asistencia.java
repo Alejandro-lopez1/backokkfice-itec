@@ -4,12 +4,17 @@ import java.time.LocalDate;
 
 /**
  * Entidad Asistencia: registro de presencia de un alumno inscripto en una fecha.
+ * <p>
+ * Segun el UML, la linea con la ComisionMateria tiene el diamante en este
+ * extremo: cada asistencia referencia a su comision (ademas de llegar a
+ * ella via el alumno inscripto).
  */
 public class Asistencia {
 
     private LocalDate fecha;
     private boolean presente;
     private AlumnoInscripto alumnoInscripto;
+    private ComisionMateria comision;
 
     public Asistencia() {
     }
@@ -44,6 +49,15 @@ public class Asistencia {
         this.alumnoInscripto = alumnoInscripto;
     }
 
+    /** Comision donde se registro la asistencia (diamante en este extremo segun el UML). */
+    public ComisionMateria getComision() {
+        return comision;
+    }
+
+    public void setComision(ComisionMateria comision) {
+        this.comision = comision;
+    }
+
     @Override
     public String toString() {
         return "Asistencia{"
@@ -51,6 +65,9 @@ public class Asistencia {
                 + ", presente=" + presente
                 + ", alumnoInscripto=" + (alumnoInscripto != null && alumnoInscripto.getAlumno() != null
                     ? alumnoInscripto.getAlumno().getApellido() + ", " + alumnoInscripto.getAlumno().getNombre()
+                    : "null")
+                + ", comision=" + (comision != null && comision.getMateria() != null
+                    ? comision.getMateria().getNombre()
                     : "null")
                 + '}';
     }

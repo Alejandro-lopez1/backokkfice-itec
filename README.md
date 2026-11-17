@@ -6,10 +6,11 @@ Proyecto final: sistema de gestión académica para consola (backoffice), desarr
 
 El sistema permite administrar el ciclo académico completo de un instituto desde la línea de comandos:
 
+- **Acceso por roles (login)**: autenticación por consola (admin / docente / alumno, máximo 3 intentos) y menú principal filtrado según el rol (US-AUTH-01).
 - **Gestión de personas**: altas, bajas lógicas, búsqueda y listado de Alumnos y Profesores.
 - **Oferta académica**: Materias (con materias correlativas), Carreras y Planes de Estudio.
 - **Dictado**: Comisiones por cuatrimestre con profesor asignado e inscripción de alumnos.
-- **Seguimiento**: carga de Notas por tipo de evaluación (con promoción automática a APROBADO si el promedio es ≥ 6) y registro de Asistencias (presente/ausente por fecha).
+- **Seguimiento**: carga de Notas por tipo de evaluación (con promoción automática a APROBADO si el promedio es ≥ 6), consulta de notas por alumno (US-NOT-03) y registro de Asistencias (presente/ausente por fecha).
 
 Al arrancar, el sistema carga un set de datos de demostración (`DataSeeder`) con alumnos, profesores, materias, comisiones, carreras y planes ya vinculados, para poder operar de inmediato.
 
@@ -66,7 +67,7 @@ El proyecto aplica un patrón **MVC en capas**, con una capa de **Service** inte
 | **Controller** | `controller` | Orquestación: recibe datos de la vista y delega en el service (controladores "delgados") | Solo conoce a los **Services** |
 | **Service** | `service` | Lógica de negocio pura: validaciones, reglas académicas, mensajes de resultado | Solo conoce a los **Repositories** |
 | **Repository** | `repository` | Persistencia en memoria (`HashMap`/`ArrayList` estáticos), operaciones CRUD | No conoce a nadie |
-| **Model** | `model` | Entidades POJO y enums del dominio académico | Solo datos (con copia defensiva de listas) |
+| **Model** | `model` | Entidades POJO y enums del dominio académico | Solo datos (con copia defensiva de listas); **alineado 1:1 al `document/Diagrama_UML_Modelo.png`** |
 
 ### Patrón Interface-Impl
 
@@ -104,6 +105,11 @@ graph TD
 
 ## Funcionalidades implementadas
 
+### 0. Acceso por roles (US-AUTH-01)
+- Login por consola con máximo **3 intentos** (`Sesion bloqueada: se agotaron los intentos de acceso` si se agotan).
+- Usuarios sembrados: `admin/admin123` (ADMIN), `docente/docente123` (DOCENTE), `alumno/alumno123` (ALUMNO).
+- Menú principal **filtrado por rol**: ADMIN ve los 7 módulos; DOCENTE solo Notas y Asistencias; ALUMNO solo la consulta de sus datos (placeholder).
+
 ### 1. Gestión de Alumnos
 - Crear alumno (valida DNI único, mail con `@`, campos obligatorios).
 - Buscar por DNI.
@@ -127,8 +133,9 @@ graph TD
 
 ### 5. Notas
 - Cargar nota (0 a 10) por tipo de evaluación (TP, PARCIAL, RECUPERATORIO, FINAL).
-- Crea el `Examen` y la `Nota` vinculados al `AlumnoInscripto`.
+- Crea el `Examen` y la `Nota` vinculados al `AlumnoInscripto` (y los agrega a las colecciones `examenes` de la comisión y `notas` del examen, según el UML).
 - Calcula el promedio y **promociona a APROBADO** si es ≥ 6 (guardando la nota final).
+- **Consultar notas por alumno (US-NOT-03)**: por DNI muestra todas sus inscripciones con materia, comisión, notas (tipo, fecha, valor), promedio y estado de cursada.
 
 ### 6. Asistencias
 - Registrar presente/ausente de un alumno inscripto, con fecha del día.
@@ -146,7 +153,7 @@ graph TD
 src/main/java/com/itec/
 ├── Main.java          # Composition root: cableado de implementaciones
 ├── config/            # DataSeeder (datos de demostración)
-├── model/             # 11 entidades POJO + 2 enums
+├── model/             # 15 entidades POJO + 3 enums (+ DayOfWeek del JDK), alineadas 1:1 al UML
 ├── repository/        # Interfaces de repositorio
 │   └── impl/          # Implementaciones (HashMap/ArrayList estáticos)
 ├── service/           # Interfaces de service (lógica de negocio)

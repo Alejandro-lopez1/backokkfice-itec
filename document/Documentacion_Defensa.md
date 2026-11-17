@@ -404,3 +404,67 @@ diagrama Mermaid del README.
   persistidas por `AlumnoInscripto`: es un cálculo sobre datos existentes.
 - *"¿Y la auditoría?"* → `AuditService` + `AuditRepositoryImpl` nuevos,
   cableados en el `Main`; los services existentes agregan una línea, nada más.
+
+## 7. Alineación con el UML
+
+La referencia visual del modelo es `document/Diagrama_UML_Modelo.png`.
+El paquete `model` fue auditado contra ese diagrama y coincide **1:1 en
+clases, atributos y relaciones**:
+
+| UML | Código |
+|---|---|
+| **14 entidades** | `Carrera`, `PlanEstudio`, `Materia`, `Cuatrimestre`, `Profesor`, `ComisionMateria`, `HorarioClase`, `ModuloHorario`, `Examen`, `Nota`, `Asistencia`, `AlumnoInscripto`, `AlumnoCarrera`, `Alumno` |
+| **3 enums de dominio** | `TipoEvaluacion` (TP, PARCIAL, RECUPERATORIO, FINAL), `EstadoCursada` (REGULAR, APROBADO, RECURSA), `DayOfWeek` (enum estándar del JDK, elegido en lugar de duplicarlo) |
+
+Todas las relaciones del diagrama están materializadas como referencias o
+listas en el extremo que marca el UML:
+
+- Composiciones: `Carrera→PlanEstudio`, `PlanEstudio→Materia`,
+  `PlanEstudio→AlumnoCarrera`, `Cuatrimestre→ComisionMateria`,
+  `Profesor→ComisionMateria`, `Examen→Nota`, `AlumnoCarrera→Alumno/Carrera`.
+- Agregaciones: `ComisionMateria◇horarios / examenes / alumnosInscriptos /
+  asistencias`, `HorarioClase◇modulos`, `AlumnoInscripto◇notas / asistencias`,
+  `Examen◇notas`, `Nota◇alumnoInscripto`.
+- Asociaciones: `Materia↔Materia` (correlativas, reflexiva),
+  `HorarioClase→DayOfWeek`, `Examen→TipoEvaluacion`,
+  `AlumnoInscripto→EstadoCursada`, `Asistencia→ComisionMateria`,
+  `Alumno→AlumnoCarrera` (con navegabilidad inversa `carreras`),
+  `AlumnoCarrera→AlumnoInscripto` (rol `inscripciones`).
+- Los servicios conectan las colecciones: `NotaServiceImpl.cargarNota`
+  agrega el `Examen` a `comision.getExamenes()` y la `Nota` a
+  `examen.getNotas()`; `AsistenciaServiceImpl.registrarAsistencia` agrega la
+  `Asistencia` a `comision.getAsistencias()` y a
+  `alumnoInscripto.getAsistencias()`, y le setea su comisión.
+
+### Atributos extra presentes en el código (decisiones de implementación)
+
+El código mantiene atributos que el diagrama no dibuja. **No son
+desviaciones del modelo: son decisiones necesarias para que las reglas de
+negocio y la persistencia en memoria funcionen**, y están documentadas en el
+Javadoc de cada clase:
+
+| Atributo | Clases | Justificación |
+|---|---|---|
+| `activo` / `activa` | `Alumno`, `Profesor`, `Materia` | Soporte de la **baja lógica** exigida por las RN (RN-ALU-04, RN-PRO-04, RN-MAT-04): el historial de inscripciones, notas y asistencias se conserva aunque la persona/materia esté dada de baja. |
+| `id` | `ComisionMateria` | Clave del `ComisionRepository` en memoria (RN-COM-07): la inscripción, las notas y las asistencias se buscan "alumno + ID de comisión". |
+| `comisiones` | `Cuatrimestre`, `Profesor` | Navegabilidad inversa: en el UML el diamante está en el extremo `ComisionMateria` (los campos `cuatrimestre`/`profesor` son el lado "todo"), pero poder listar las comisiones de un cuatrimestre o de un profesor desde el propio objeto simplifica los listados. |
+| `carreras` | `Alumno` | Ídem, inversa de la asociación `Alumno—AlumnoCarrera`. |
+| `planEstudio` | `AlumnoCarrera` | Compone la línea `PlanEstudio—AlumnoCarrera` del diagrama. |
+| `comision` | `Asistencia` | En el diagrama el diamante de la línea `Asistencia—ComisionMateria` queda en el extremo `Asistencia`. |
+
+Otras decisiones de nomenclatura/alcance, también documentadas:
+
+- El rol `inscriptos` del UML se implementa como
+  `ComisionMateria.alumnosInscriptos` (nombre descriptivo consolidado en
+  todo el código, vistas y repositorios).
+- `Usuario` y `Rol` pertenecen al módulo de autenticación (EPIC-AUTH),
+  fuera del alcance del diagrama de dominio académico.
+- La composición/agregación no es representable en Java (ambas son
+  referencias); la semántica de "quién posee a quién" se refleja en qué
+  clase declara el campo y en las copias defensivas de las listas
+  (patrón RN-TRA-02).
+- `AlumnoCarrera.inscripciones` queda estructural y lista para la Fase 2
+  (el MVP no crea inscripciones por carrera).
+
+Con esto, el modelo de objetos cumple el diagrama definitivo sin sacrificar
+ninguna regla de negocio aprobada (74 casos de prueba).

@@ -5,16 +5,15 @@ import java.util.List;
 
 /**
  * Entidad AlumnoCarrera del diagrama de clases UML: inscripcion de un
- * alumno en una carrera, con el anio de ingreso.
- * <p>
- * Ademas de los atributos del UML, sostiene la relacion con las
- * inscripciones a comisiones del alumno en esa carrera (rol
- * "inscripciones"), disponible para la Fase 2.
+ * alumno en una carrera, con el anio de ingreso y el plan de estudio
+ * bajo el que cursa (composiciones hacia Alumno, Carrera y PlanEstudio
+ * segun el UML), mas las inscripciones a comisiones (rol "inscripciones").
  */
 public class AlumnoCarrera {
 
     private Alumno alumno;
     private Carrera carrera;
+    private PlanEstudio planEstudio;
     private int anioIngreso;
     private List<AlumnoInscripto> inscripciones;
 
@@ -45,6 +44,15 @@ public class AlumnoCarrera {
         this.carrera = carrera;
     }
 
+    /** Plan de estudio bajo el que el alumno cursa la carrera (composicion del UML). */
+    public PlanEstudio getPlanEstudio() {
+        return planEstudio;
+    }
+
+    public void setPlanEstudio(PlanEstudio planEstudio) {
+        this.planEstudio = planEstudio;
+    }
+
     public int getAnioIngreso() {
         return anioIngreso;
     }
@@ -70,6 +78,7 @@ public class AlumnoCarrera {
                     ? alumno.getApellido() + ", " + alumno.getNombre()
                     : "null")
                 + ", carrera=" + (carrera != null ? carrera.getNombre() : "null")
+                + ", planEstudio=" + (planEstudio != null ? planEstudio.getNombre() : "null")
                 + ", anioIngreso=" + anioIngreso
                 + ", inscripciones=" + inscripciones.size()
                 + '}';

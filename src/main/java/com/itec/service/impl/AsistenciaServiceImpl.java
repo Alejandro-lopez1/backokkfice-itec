@@ -44,6 +44,12 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         }
 
         Asistencia asistencia = new Asistencia(LocalDate.now(), presente, inscripto);
+        // Wiring de las colecciones del UML: la comision y el inscripto
+        // agregan la asistencia (rol "asistencias"), y la asistencia
+        // referencia a su comision (diamante en el extremo Asistencia).
+        asistencia.setComision(comision);
+        comision.getAsistencias().add(asistencia);
+        inscripto.getAsistencias().add(asistencia);
         asistenciaRepository.agregar(asistencia);
         return MSG_REGISTRADA + " (" + LocalDate.now() + ")";
     }

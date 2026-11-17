@@ -1,7 +1,14 @@
 package com.itec.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Entidad Alumno del dominio academico.
+ * <p>
+ * Ademas de los atributos del UML, sostiene la asociacion con
+ * AlumnoCarrera (inscripciones del alumno a carreras) y el flag activo
+ * que exige la baja logica de las reglas de negocio.
  */
 public class Alumno {
 
@@ -11,8 +18,10 @@ public class Alumno {
     private String mail;
     private String telefono;
     private boolean activo;
+    private List<AlumnoCarrera> carreras;
 
     public Alumno() {
+        this.carreras = new ArrayList<>();
     }
 
     public Alumno(String nombre, String apellido, String dni, String mail, String telefono, boolean activo) {
@@ -22,6 +31,7 @@ public class Alumno {
         this.mail = mail;
         this.telefono = telefono;
         this.activo = activo;
+        this.carreras = new ArrayList<>();
     }
 
     public String getNombre() {
@@ -72,6 +82,16 @@ public class Alumno {
         this.activo = activo;
     }
 
+    /** Inscripciones del alumno a carreras (asociacion con AlumnoCarrera). */
+    public List<AlumnoCarrera> getCarreras() {
+        return carreras;
+    }
+
+    public void setCarreras(List<AlumnoCarrera> carreras) {
+        // Copia defensiva: nunca guardar directo una lista recibida (puede ser inmutable).
+        this.carreras = carreras != null ? new ArrayList<>(carreras) : new ArrayList<>();
+    }
+
     @Override
     public String toString() {
         return "Alumno{"
@@ -81,6 +101,7 @@ public class Alumno {
                 + ", mail='" + mail + '\''
                 + ", telefono='" + telefono + '\''
                 + ", activo=" + activo
+                + ", carreras=" + carreras.size()
                 + '}';
     }
 }

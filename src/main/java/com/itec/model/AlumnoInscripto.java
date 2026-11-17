@@ -6,6 +6,9 @@ import java.util.List;
 /**
  * Entidad AlumnoInscripto: inscripcion de un alumno en una comision,
  * con su estado de cursada, nota final y las notas de sus examenes.
+ * <p>
+ * Ademas de los atributos del UML, sostiene la agregacion con las
+ * asistencias del inscripto (rol "asistencias").
  */
 public class AlumnoInscripto {
 
@@ -14,9 +17,11 @@ public class AlumnoInscripto {
     private EstadoCursada estadoCursada;
     private double notaFinal;
     private List<Nota> notas;
+    private List<Asistencia> asistencias;
 
     public AlumnoInscripto() {
         this.notas = new ArrayList<>();
+        this.asistencias = new ArrayList<>();
     }
 
     public AlumnoInscripto(Alumno alumno, ComisionMateria comision, EstadoCursada estadoCursada, double notaFinal) {
@@ -25,6 +30,7 @@ public class AlumnoInscripto {
         this.estadoCursada = estadoCursada;
         this.notaFinal = notaFinal;
         this.notas = new ArrayList<>();
+        this.asistencias = new ArrayList<>();
     }
 
     public Alumno getAlumno() {
@@ -67,6 +73,16 @@ public class AlumnoInscripto {
         this.notas = notas;
     }
 
+    /** Asistencias del inscripto (agregacion con rol "asistencias"). */
+    public List<Asistencia> getAsistencias() {
+        return asistencias;
+    }
+
+    public void setAsistencias(List<Asistencia> asistencias) {
+        // Copia defensiva: nunca guardar directo una lista recibida (puede ser inmutable).
+        this.asistencias = asistencias != null ? new ArrayList<>(asistencias) : new ArrayList<>();
+    }
+
     /** Calcula el promedio de las notas cargadas (0 si no tiene notas). */
     public double promedioNotas() {
         if (notas.isEmpty()) {
@@ -89,6 +105,7 @@ public class AlumnoInscripto {
                 + ", estadoCursada=" + estadoCursada
                 + ", notaFinal=" + notaFinal
                 + ", notas=" + notas.size()
+                + ", asistencias=" + asistencias.size()
                 + '}';
     }
 }

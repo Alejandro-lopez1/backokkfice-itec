@@ -1,7 +1,14 @@
 package com.itec.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Entidad Profesor del dominio academico.
+ * <p>
+ * Ademas de los atributos del UML, sostiene la composicion con las
+ * comisiones que dicta (Profesor -> ComisionMateria) y el flag activo
+ * que exige la baja logica de las reglas de negocio.
  */
 public class Profesor {
 
@@ -11,8 +18,10 @@ public class Profesor {
     private String mail;
     private String telefono;
     private boolean activo;
+    private List<ComisionMateria> comisiones;
 
     public Profesor() {
+        this.comisiones = new ArrayList<>();
     }
 
     public Profesor(String nombre, String apellido, String dni, String mail, String telefono, boolean activo) {
@@ -22,6 +31,7 @@ public class Profesor {
         this.mail = mail;
         this.telefono = telefono;
         this.activo = activo;
+        this.comisiones = new ArrayList<>();
     }
 
     public String getNombre() {
@@ -72,6 +82,16 @@ public class Profesor {
         this.activo = activo;
     }
 
+    /** Comisiones que dicta el profesor (composicion hacia ComisionMateria). */
+    public List<ComisionMateria> getComisiones() {
+        return comisiones;
+    }
+
+    public void setComisiones(List<ComisionMateria> comisiones) {
+        // Copia defensiva: nunca guardar directo una lista recibida (puede ser inmutable).
+        this.comisiones = comisiones != null ? new ArrayList<>(comisiones) : new ArrayList<>();
+    }
+
     @Override
     public String toString() {
         return "Profesor{"
@@ -81,6 +101,7 @@ public class Profesor {
                 + ", mail='" + mail + '\''
                 + ", telefono='" + telefono + '\''
                 + ", activo=" + activo
+                + ", comisiones=" + comisiones.size()
                 + '}';
     }
 }

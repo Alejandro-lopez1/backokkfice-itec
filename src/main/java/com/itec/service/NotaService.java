@@ -7,6 +7,8 @@ import com.itec.model.Examen;
 import com.itec.model.Nota;
 import com.itec.model.TipoEvaluacion;
 
+import java.util.List;
+
 /**
  * Contrato del servicio de notas (patron Interface-Impl).
  * <p>
@@ -26,4 +28,17 @@ public interface NotaService {
 
     /** Carga una nota para un alumno inscripto en una comision. */
     String cargarNota(String dniAlumno, int idComision, TipoEvaluacion tipo, double valor);
+
+    /**
+     * Busca las inscripciones del alumno (por DNI) en todas las comisiones,
+     * con el historial de notas de cada una.
+     * <p>
+     * Decision documentada (US-NOT-03): si el DNI no corresponde a ningun
+     * inscripto —incluido el caso de un alumno inexistente en el padron,
+     * que nunca puede estar inscripto— retorna una lista vacia. La Vista
+     * presenta el mismo mensaje en ambos casos ("El alumno no tiene notas
+     * registradas"); no se inyecta el AlumnoRepository para esta consulta
+     * para no ampliar el cableado del Main.
+     */
+    List<AlumnoInscripto> consultarNotasPorAlumno(String dni);
 }

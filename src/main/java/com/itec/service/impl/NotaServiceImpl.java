@@ -11,6 +11,8 @@ import com.itec.model.TipoEvaluacion;
 import com.itec.repository.ComisionRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementacion del servicio de notas: carga examenes y calcula el estado
@@ -76,5 +78,17 @@ public class NotaServiceImpl implements NotaService {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<AlumnoInscripto> consultarNotasPorAlumno(String dni) {
+        List<AlumnoInscripto> resultado = new ArrayList<>();
+        for (ComisionMateria comision : comisionRepository.obtenerTodos()) {
+            AlumnoInscripto inscripto = buscarInscripto(comision, dni);
+            if (inscripto != null) {
+                resultado.add(inscripto);
+            }
+        }
+        return resultado;
     }
 }

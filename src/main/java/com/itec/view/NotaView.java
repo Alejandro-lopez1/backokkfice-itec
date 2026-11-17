@@ -2,9 +2,13 @@ package com.itec.view;
 
 import com.itec.controller.ComisionController;
 import com.itec.controller.NotaController;
+import com.itec.model.AlumnoInscripto;
 import com.itec.model.ComisionMateria;
+import com.itec.model.Examen;
+import com.itec.model.Nota;
 import com.itec.model.TipoEvaluacion;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -31,7 +35,8 @@ public class NotaView {
             System.out.println("===== NOTAS =====");
             System.out.println("1. Cargar Nota");
             System.out.println("2. Listar Comisiones (ayuda)");
-            System.out.println("3. Volver al menu principal");
+            System.out.println("3. Consultar notas por alumno");
+            System.out.println("4. Volver al menu principal");
             opcion = leerOpcion("Seleccione una opcion: ");
 
             switch (opcion) {
@@ -42,12 +47,15 @@ public class NotaView {
                     listarComisiones();
                     break;
                 case 3:
+                    consultarNotasPorAlumno();
+                    break;
+                case 4:
                     System.out.println("Volviendo al menu principal...");
                     break;
                 default:
                     System.out.println("ERROR: opcion invalida");
             }
-        } while (opcion != 3);
+        } while (opcion != 4);
     }
 
     private void cargarNota() {
@@ -72,6 +80,46 @@ public class NotaView {
 
         String resultado = controller.cargarNota(dni, idComision, tipo, valor);
         System.out.println(resultado);
+    }
+
+    /** Consulta todas las notas del alumno (por DNI) en todas sus comisiones. */
+    private void consultarNotasPorAlumno() {
+        System.out.println("--- Consultar notas por alumno ---");
+        String dni = ConsoleInput.leerLinea("DNI del alumno: ").trim();
+
+        List<AlumnoInscripto> inscriptos = controller.consultarNotasPorAlumno(dni);
+        if (inscriptos.isEmpty()) {
+            System.out.println("El alumno no tiene notas registradas");
+            return;
+        }
+
+        AlumnoInscripto primero = inscriptos.get(0);
+        System.out.println("Alumno: " + primero.getAlumno().getApellido() + ", "
+                + primero.getAlumno().getNombre()
+                + " (DNI " + primero.getAlumno().getDni() + ")");
+
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        for (AlumnoInscripto inscripto : inscriptos) {
+            ComisionMateria comision = inscripto.getComision();
+            String materia = comision != null && comision.getMateria() != null
+                    ? comision.getMateria().getNombre()
+                    : "(materia no disponible)";
+            System.out.println("- Comision ID " + comision.getId() + " (" + materia
+                    + ") - Estado: " + inscripto.getEstadoCursada());
+
+            List<Nota> notas = inscripto.getNotas();
+            if (notas.isEmpty()) {
+                System.out.println("  (sin notas cargadas)");
+            } else {
+                for (Nota nota : notas) {
+                    Examen examen = nota.getExamen();
+                    System.out.println("  * " + examen.getTipoEvaluacion()
+                            + " (" + examen.getFecha().format(formato) + "): "
+                            + String.format("%.2f", nota.getValor()));
+                }
+                System.out.println("  Promedio: " + String.format("%.2f", inscripto.promedioNotas()));
+            }
+        }
     }
 
     /** Muestra los tipos de evaluacion y devuelve el elegido, o null si es invalido. */

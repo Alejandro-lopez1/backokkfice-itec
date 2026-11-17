@@ -152,3 +152,15 @@ src/main/java/com/itec/
 ├── controller/        # Controladores delgados
 └── view/              # Menús de consola + ConsoleInput (Scanner único)
 ```
+
+## Próximos Pasos (Roadmap)
+
+El sistema está preparado para escalar hacia los requerimientos del **Anexo** del enunciado, gracias a la arquitectura por capas con Interface-Impl: cada nueva funcionalidad entra como un nuevo `Service` + `Repository` cableado en el `Main`, sin alterar lo existente.
+
+| Módulo futuro | Descripción | Preparación actual |
+|---|---|---|
+| **Auditoría** | Registro de quién modificó qué y cuándo (trazabilidad de operaciones) | Las reglas de negocio ya están centralizadas en los `*ServiceImpl`: es el punto natural para emitir eventos de auditoría |
+| **Reportes** | Estadísticas académicas (inscriptos por comisión, aprobados, ausentismo) | Los repositorios ya exponen `obtenerTodos()` con copias defensivas; un `ReporteService` puede agregarse sobre las interfaces existentes |
+| **Actas** | Generación de actas de final/cursada por comisión | El modelo ya vincula `AlumnoInscripto` → `Examen`/`Nota` con estado `APROBADO`; falta el servicio de armado de documento |
+
+También queda como mejora técnica natural: reemplazar la persistencia en memoria por una implementación de repositorio sobre archivo o base de datos — solo requiere escribir los nuevos `*RepositoryImpl` y cambiar el cableado en el `Main`.

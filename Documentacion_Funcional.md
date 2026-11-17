@@ -178,16 +178,54 @@ Escenario: doble baja
 | ALU-TC08 | Menú 1 → 3 → DNI de un alumno activo | "Alumno dado de baja" y estado INACTIVO en el listado |
 | ALU-TC09 | Repetir baja sobre el mismo alumno | "ERROR: el alumno ya se encuentra inactivo" |
 
-**US-ALU-05 — Modificación de alumno**: ❌ **No implementada** en el código
-actual (el service no expone método de modificación). Ver Anexo §3.
+**US-ALU-05 — Modificación de alumno**
+- *Como* secretaría, *quiero* modificar los datos de un alumno, *para*
+  corregir errores de carga sin perder su legajo ni su historial.
+- **Prioridad**: Media.
+- **Reglas de negocio** (`AlumnoServiceImpl.modificarAlumno`):
+  - El DNI **no es editable** (clave de negocio del repositorio); identifica
+    al alumno a modificar.
+  - Alumno inexistente → `ERROR: no existe un alumno con ese DNI`.
+  - Nombre y apellido obligatorios (trim; vacío = faltante) →
+    `ERROR: nombre, apellido y DNI son obligatorios`.
+  - Mail con `@` → `ERROR: mail invalido (debe contener '@')`.
+  - Teléfono opcional. Se modifican los datos del **mismo objeto**
+    (sin re-claveo: la clave no cambia).
+- **Gherkin**:
+
+```gherkin
+Escenario: modificacion exitosa
+  DADO un alumno registrado con DNI "40123456"
+  CUANDO modifico su nombre, apellido y mail con datos validos
+  ENTONCES el sistema responde "Alumno modificado con exito"
+  Y la busqueda por el mismo DNI muestra los datos actualizados
+
+Escenario: alumno inexistente
+  CUANDO intento modificar el DNI "99999999"
+  ENTONCES el sistema responde "ERROR: no existe un alumno con ese DNI"
+
+Escenario: mail invalido en modificacion
+  CUANDO intento modificar con un mail sin "@"
+  ENTONCES el sistema responde "ERROR: mail invalido (debe contener '@')"
+  Y los datos del alumno quedan sin cambios
+```
+
+- **Casos de prueba**:
+
+| ID | Pasos | Resultado esperado |
+|---|---|---|
+| ALU-TC10 | Menú 1 → 5 → DNI `40123456` + datos válidos | "Alumno modificado con exito" |
+| ALU-TC11 | Verificar por búsqueda (menú 1 → 2) | Datos actualizados bajo el mismo DNI |
+| ALU-TC12 | Modificar DNI `99999999` | "ERROR: no existe un alumno con ese DNI" |
+| ALU-TC13 | Modificar con mail sin `@` | "ERROR: mail invalido (debe contener '@')" |
 
 ---
 
 ### EPIC-PROF — Gestión de Profesores
 
 **Descripción**: administración de docentes con clave DNI y baja lógica.
-El módulo implementa **alta, búsqueda y baja** (sin listado ni modificación:
-ver Anexo §3).
+El módulo implementa el CRUD completo: **alta, búsqueda, baja lógica,
+listado y modificación** (el DNI no es editable).
 
 **US-PROF-01 — Alta de profesor**
 - *Como* coordinación, *quiero* registrar un docente, *para* asignarlo luego a
@@ -242,6 +280,59 @@ Escenario: DNI duplicado
 |---|---|---|
 | PROF-TC06 | Menú 2 → 3 → DNI activo | "Profesor dado de baja" |
 | PROF-TC07 | Repetir la baja | "ERROR: el profesor ya se encuentra inactivo" |
+
+**US-PROF-04 — Listado de profesores**
+- *Como* coordinación, *quiero* listar todos los profesores, *para* disponer
+  del cuadro de docentes al asignar comisiones.
+- **Prioridad**: Media.
+- **Reglas de negocio** (`ProfesorServiceImpl.listarTodos`): el listado muestra
+  **DNI, apellido y nombre, mail y estado** de todos los profesores (activos e
+  inactivos); padrón vacío → "(no hay profesores registrados)".
+- **Gherkin**:
+
+```gherkin
+Escenario: listado completo
+  DADO docentes activos e inactivos en el repositorio
+  CUANDO solicito el listado
+  ENTONCES se muestran todos, cada uno con su estado (ACTIVO/INACTIVO)
+```
+
+- **Casos de prueba**:
+
+| ID | Pasos | Resultado esperado |
+|---|---|---|
+| PROF-TC08 | Menú 2 → 4 | Los 5 profesores sembrados con DNI, apellido/nombre, mail y estado |
+
+**US-PROF-05 — Modificación de profesor**
+- *Como* coordinación, *quiero* modificar los datos de un docente, *para*
+  corregir su registro sin perder sus asignaciones históricas.
+- **Prioridad**: Media.
+- **Reglas de negocio** (`ProfesorServiceImpl.modificarProfesor`): mismas que
+  la modificación de alumnos — DNI **no editable** (identifica al docente),
+  existencia requerida, nombre/apellido obligatorios, mail con `@`, teléfono
+  opcional; se modifica el mismo objeto (sin re-claveo).
+- **Gherkin**:
+
+```gherkin
+Escenario: modificacion exitosa
+  DADO un profesor registrado con DNI "20111222"
+  CUANDO modifico sus datos con valores validos
+  ENTONCES el sistema responde "Profesor modificado con exito"
+  Y la busqueda por el mismo DNI muestra los datos actualizados
+
+Escenario: profesor inexistente
+  CUANDO intento modificar el DNI "99999999"
+  ENTONCES el sistema responde "ERROR: no existe un profesor con ese DNI"
+```
+
+- **Casos de prueba**:
+
+| ID | Pasos | Resultado esperado |
+|---|---|---|
+| PROF-TC09 | Menú 2 → 5 → DNI `20111222` + datos válidos | "Profesor modificado con exito" |
+| PROF-TC10 | Verificar por búsqueda (menú 2 → 2) | Datos actualizados bajo el mismo DNI |
+| PROF-TC11 | Modificar DNI `99999999` | "ERROR: no existe un profesor con ese DNI" |
+| PROF-TC12 | Modificar con mail sin `@` | "ERROR: mail invalido (debe contener '@')" |
 
 ---
 
@@ -658,11 +749,12 @@ Materias, con materias compartidas por instancia con el repositorio.
 | ALU | US-ALU-02 Búsqueda por DNI | Sí | `AlumnoServiceImpl.buscarAlumno` · `AlumnoRepositoryImpl.buscarPorDni` |
 | ALU | US-ALU-03 Listado del padrón | Sí | `AlumnoServiceImpl.listarTodos` · `AlumnoRepositoryImpl.obtenerTodos` · `AlumnoView` (opción 4) |
 | ALU | US-ALU-04 Baja lógica | Sí | `AlumnoServiceImpl.darDeBajaLogica` |
-| ALU | US-ALU-05 Modificación de alumno | **No** | — (no existe método en `AlumnoService`) |
+| ALU | US-ALU-05 Modificación de alumno | Sí | `AlumnoServiceImpl.modificarAlumno` · `AlumnoView` (opción 5) |
 | PROF | US-PROF-01 Alta de profesor | Sí | `ProfesorServiceImpl.crearProfesor` |
 | PROF | US-PROF-02 Búsqueda por DNI | Sí | `ProfesorServiceImpl.buscarProfesor` |
 | PROF | US-PROF-03 Baja lógica | Sí | `ProfesorServiceImpl.darDeBajaLogica` |
-| PROF | Listado / modificación de profesor | **No** | — |
+| PROF | Listado de profesores | Sí | `ProfesorServiceImpl.listarTodos` · `ProfesorView` (opción 4) |
+| PROF | US-PROF-05 Modificación de profesor | Sí | `ProfesorServiceImpl.modificarProfesor` · `ProfesorView` (opción 5) |
 | MAT | US-MAT-01 Alta de materia | Sí | `MateriaServiceImpl.crearMateria` |
 | MAT | US-MAT-02 Búsqueda y listado | Sí | `MateriaServiceImpl.buscarMateria/listarTodas` |
 | MAT | US-MAT-03 Modificación con re-claveo | Sí | `MateriaServiceImpl.modificarMateria` · `MateriaRepository.eliminar/guardar` |
@@ -703,8 +795,7 @@ punto de extensión.
 | **Reportes (alumnos en riesgo, libro de actas)** | Agregaciones estadísticas no esenciales para el ciclo MVP | Los repositorios exponen `obtenerTodos()` con copias defensivas: un `ReporteService` se agrega sobre las interfaces existentes (ej: inscriptos con % asistencia < 70% = "en riesgo") |
 | **Seguridad por roles (DOC vs ADM)** | La autenticación misma no estaba en el MVP (sesión única de operador) | El punto de entrada es único (`Main` → `MenuPrincipalView`): un filtrado de menú por rol se inserta entre ambos sin tocar services ni repositorios; los roles vendrían de un `UsuarioService` nuevo |
 
-Además, quedan como mejoras técnicas menores detectadas y no priorizadas:
-modificación de alumnos (US-ALU-05), listado/modificación de profesores, y
+Además, queda como mejora técnica menor detectada y no priorizada:
 anti-duplicado de asistencia por día por inscripto.
 
 ---
@@ -725,6 +816,10 @@ anti-duplicado de asistencia por día por inscripto.
 | ALU-TC07 | Listado del padrón | Todos los alumnos con estado (incluye INACTIVO sembrado) | Aprobado |
 | ALU-TC08 | Baja lógica de alumno activo | "Alumno dado de baja"; estado INACTIVO | Aprobado |
 | ALU-TC09 | Doble baja | "ERROR: el alumno ya se encuentra inactivo" | Aprobado |
+| ALU-TC10 | Modificación de alumno con datos válidos | "Alumno modificado con exito" | Aprobado |
+| ALU-TC11 | Verificación post-modificación por búsqueda | Datos actualizados bajo el mismo DNI | Aprobado |
+| ALU-TC12 | Modificación de DNI inexistente | "ERROR: no existe un alumno con ese DNI" | Aprobado |
+| ALU-TC13 | Modificación con mail sin `@` | "ERROR: mail invalido (debe contener '@')" | Aprobado |
 | PROF-TC01 | Alta de profesor válida | "Profesor creado con exito" | Aprobado |
 | PROF-TC02 | Alta con DNI duplicado | "ERROR: DNI ya registrado" | Aprobado |
 | PROF-TC03 | Alta con mail sin `@` | "ERROR: mail invalido" | Aprobado |
@@ -732,6 +827,11 @@ anti-duplicado de asistencia por día por inscripto.
 | PROF-TC05 | Búsqueda por DNI inexistente | "ERROR: profesor no encontrado" | Aprobado |
 | PROF-TC06 | Baja lógica de profesor activo | "Profesor dado de baja" | Aprobado |
 | PROF-TC07 | Doble baja | "ERROR: el profesor ya se encuentra inactivo" | Aprobado |
+| PROF-TC08 | Listado de todos los profesores | DNI, apellido/nombre, mail y estado | Aprobado |
+| PROF-TC09 | Modificación de profesor con datos válidos | "Profesor modificado con exito" | Aprobado |
+| PROF-TC10 | Verificación post-modificación por búsqueda | Datos actualizados bajo el mismo DNI | Aprobado |
+| PROF-TC11 | Modificación de DNI inexistente | "ERROR: no existe un profesor con ese DNI" | Aprobado |
+| PROF-TC12 | Modificación con mail sin `@` | "ERROR: mail invalido (debe contener '@')" | Aprobado |
 | MAT-TC01 | Alta de materia válida | "Materia creada con exito" | Aprobado |
 | MAT-TC02 | Alta con nombre duplicado | "ERROR: ya existe una materia con ese nombre" | Aprobado |
 | MAT-TC03 | Alta con cuatrimestre inválido | "ERROR: datos invalidos" | Aprobado |
@@ -776,7 +876,7 @@ anti-duplicado de asistencia por día por inscripto.
 | CAR-TC08 | Asociación con materia inexistente | "ERROR: materia inexistente" | Aprobado |
 | CAR-TC09 | Listado jerárquico Carrera→Plan→Materias | Jerarquía completa con vigencias y correlativas | Aprobado |
 
-**Total: 62 casos de prueba · 62 Aprobados.** Los tres TC de AUTH-01..03
+**Total: 69 casos de prueba · 69 Aprobados.** Los tres TC de AUTH-01..03
 corresponden al flujo simulado de sesión (sin autenticación real, ver
-EPIC-AUTH); los restantes 59 validan reglas de negocio verificadas contra los
+EPIC-AUTH); los restantes 66 validan reglas de negocio verificadas contra los
 services.

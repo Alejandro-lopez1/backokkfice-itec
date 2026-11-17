@@ -35,4 +35,15 @@ public class ProfesorController {
     public String darDeBajaLogica(String dni) {
         return service.darDeBajaLogica(dni);
     }
+
+    /** Delega en el Service el listado de todos los profesores. */
+    public java.util.List<Profesor> listarTodos() {
+        return service.listarTodos();
+    }
+
+    /** Delega en el Service la modificacion de datos del profesor. */
+    public String modificarProfesor(String dni, String nuevoNombre, String nuevoApellido,
+                                    String nuevoMail, String nuevoTelefono) {
+        return service.modificarProfesor(dni, nuevoNombre, nuevoApellido, nuevoMail, nuevoTelefono);
+    }
 }

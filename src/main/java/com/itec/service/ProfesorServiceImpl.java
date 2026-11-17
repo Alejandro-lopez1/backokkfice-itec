@@ -62,6 +62,39 @@ public class ProfesorServiceImpl implements ProfesorService {
         return MSG_DADO_DE_BAJA;
     }
 
+    @Override
+    public java.util.List<Profesor> listarTodos() {
+        return repository.obtenerTodos();
+    }
+
+    @Override
+    public String modificarProfesor(String dni, String nuevoNombre, String nuevoApellido,
+                                    String nuevoMail, String nuevoTelefono) {
+        Profesor profesor = buscarProfesor(dni);
+        if (profesor == null) {
+            return MSG_NO_ENCONTRADO;
+        }
+
+        String nombre = normalizar(nuevoNombre);
+        String apellido = normalizar(nuevoApellido);
+        String mail = normalizar(nuevoMail);
+        String telefono = normalizar(nuevoTelefono);
+
+        if (nombre == null || apellido == null) {
+            return MSG_DATOS_OBLIGATORIOS;
+        }
+        if (mail == null || !mail.contains("@")) {
+            return MSG_MAIL_INVALIDO;
+        }
+
+        // El DNI no se modifica: es la clave de negocio del repositorio.
+        profesor.setNombre(nombre);
+        profesor.setApellido(apellido);
+        profesor.setMail(mail);
+        profesor.setTelefono(telefono);
+        return MSG_MODIFICADO;
+    }
+
     /** Quita espacios de los extremos; devuelve null si queda vacio. */
     private String normalizar(String valor) {
         if (valor == null) {

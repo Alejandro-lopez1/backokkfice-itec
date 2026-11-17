@@ -40,4 +40,10 @@ public class AlumnoController {
     public String darDeBajaLogica(String dni) {
         return service.darDeBajaLogica(dni);
     }
+
+    /** Delega en el Service la modificacion de datos del alumno. */
+    public String modificarAlumno(String dni, String nuevoNombre, String nuevoApellido,
+                                  String nuevoMail, String nuevoTelefono) {
+        return service.modificarAlumno(dni, nuevoNombre, nuevoApellido, nuevoMail, nuevoTelefono);
+    }
 }

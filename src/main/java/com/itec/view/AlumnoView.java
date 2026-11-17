@@ -27,7 +27,8 @@ public class AlumnoView {
             System.out.println("2. Buscar Alumno");
             System.out.println("3. Dar de Baja");
             System.out.println("4. Listar todos los alumnos");
-            System.out.println("5. Volver al menu principal");
+            System.out.println("5. Modificar Alumno");
+            System.out.println("6. Volver al menu principal");
             opcion = leerOpcion("Seleccione una opcion: ");
 
             switch (opcion) {
@@ -44,12 +45,15 @@ public class AlumnoView {
                     listarAlumnos();
                     break;
                 case 5:
+                    modificarAlumno();
+                    break;
+                case 6:
                     System.out.println("Volviendo al menu principal...");
                     break;
                 default:
                     System.out.println("ERROR: opcion invalida");
             }
-        } while (opcion != 5);
+        } while (opcion != 6);
     }
 
     private void crearAlumno() {
@@ -108,5 +112,18 @@ public class AlumnoView {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    /** Pide el DNI y los nuevos datos, y delega la modificacion. */
+    private void modificarAlumno() {
+        System.out.println("--- Modificar Alumno ---");
+        String dni = ConsoleInput.leerLinea("DNI del alumno a modificar: ");
+        String nombre = ConsoleInput.leerLinea("Nuevo nombre: ");
+        String apellido = ConsoleInput.leerLinea("Nuevo apellido: ");
+        String mail = ConsoleInput.leerLinea("Nuevo mail: ");
+        String telefono = ConsoleInput.leerLinea("Nuevo telefono: ");
+
+        String resultado = controller.modificarAlumno(dni, nombre, apellido, mail, telefono);
+        System.out.println(resultado);
     }
 }

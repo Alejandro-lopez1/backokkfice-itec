@@ -26,7 +26,9 @@ public class ProfesorView {
             System.out.println("1. Crear Profesor");
             System.out.println("2. Buscar Profesor por DNI");
             System.out.println("3. Dar de Baja Profesor");
-            System.out.println("4. Volver al menu principal");
+            System.out.println("4. Listar todos los profesores");
+            System.out.println("5. Modificar Profesor");
+            System.out.println("6. Volver al menu principal");
             opcion = leerOpcion("Seleccione una opcion: ");
 
             switch (opcion) {
@@ -40,12 +42,18 @@ public class ProfesorView {
                     darDeBaja();
                     break;
                 case 4:
+                    listarProfesores();
+                    break;
+                case 5:
+                    modificarProfesor();
+                    break;
+                case 6:
                     System.out.println("Volviendo al menu principal...");
                     break;
                 default:
                     System.out.println("ERROR: opcion invalida");
             }
-        } while (opcion != 4);
+        } while (opcion != 6);
     }
 
     private void crearProfesor() {
@@ -87,5 +95,35 @@ public class ProfesorView {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    /** Lista todos los profesores: DNI, nombre completo, mail y estado. */
+    private void listarProfesores() {
+        System.out.println("--- Profesores registrados ---");
+        java.util.List<Profesor> profesores = controller.listarTodos();
+        if (profesores.isEmpty()) {
+            System.out.println("(no hay profesores registrados)");
+            return;
+        }
+        for (Profesor profesor : profesores) {
+            String estado = profesor.isActivo() ? "ACTIVO" : "INACTIVO";
+            System.out.println("- DNI " + profesor.getDni()
+                    + " | " + profesor.getApellido() + ", " + profesor.getNombre()
+                    + " | " + profesor.getMail()
+                    + " | " + estado);
+        }
+    }
+
+    /** Pide el DNI y los nuevos datos, y delega la modificacion. */
+    private void modificarProfesor() {
+        System.out.println("--- Modificar Profesor ---");
+        String dni = ConsoleInput.leerLinea("DNI del profesor a modificar: ");
+        String nombre = ConsoleInput.leerLinea("Nuevo nombre: ");
+        String apellido = ConsoleInput.leerLinea("Nuevo apellido: ");
+        String mail = ConsoleInput.leerLinea("Nuevo mail: ");
+        String telefono = ConsoleInput.leerLinea("Nuevo telefono: ");
+
+        String resultado = controller.modificarProfesor(dni, nombre, apellido, mail, telefono);
+        System.out.println(resultado);
     }
 }

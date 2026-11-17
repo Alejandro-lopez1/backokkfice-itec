@@ -18,6 +18,7 @@ public interface AlumnoService {
     String MSG_NO_ENCONTRADO = "ERROR: no existe un alumno con ese DNI";
     String MSG_YA_INACTIVO = "ERROR: el alumno ya se encuentra inactivo";
     String MSG_DADO_DE_BAJA = "Alumno dado de baja (baja logica)";
+    String MSG_MODIFICADO = "Alumno modificado con exito";
 
     /** Crea y guarda un alumno nuevo. Devuelve mensaje de exito o de error. */
     String crearAlumno(String nombre, String apellido, String dni, String mail, String telefono);
@@ -30,4 +31,12 @@ public interface AlumnoService {
 
     /** Da de baja logicamente a un alumno (activo = false). */
     String darDeBajaLogica(String dni);
+
+    /**
+     * Modifica los datos de un alumno identificado por su DNI. El DNI no es
+     * editable (es la clave de negocio): solo cambian nombre, apellido, mail
+     * y telefono, que son obligatorios.
+     */
+    String modificarAlumno(String dni, String nuevoNombre, String nuevoApellido,
+                           String nuevoMail, String nuevoTelefono);
 }

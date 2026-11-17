@@ -3,6 +3,7 @@ package com.itec;
 import com.itec.config.DataSeeder;
 import com.itec.controller.AlumnoController;
 import com.itec.controller.AsistenciaController;
+import com.itec.controller.AuthController;
 import com.itec.controller.CarreraController;
 import com.itec.controller.ComisionController;
 import com.itec.controller.MateriaController;
@@ -20,10 +21,15 @@ import com.itec.repository.MateriaRepository;
 import com.itec.repository.impl.MateriaRepositoryImpl;
 import com.itec.repository.ProfesorRepository;
 import com.itec.repository.impl.ProfesorRepositoryImpl;
+import com.itec.repository.UsuarioRepository;
+import com.itec.repository.impl.UsuarioRepositoryImpl;
+import com.itec.model.Usuario;
 import com.itec.service.AlumnoService;
 import com.itec.service.impl.AlumnoServiceImpl;
 import com.itec.service.AsistenciaService;
 import com.itec.service.impl.AsistenciaServiceImpl;
+import com.itec.service.AuthService;
+import com.itec.service.impl.AuthServiceImpl;
 import com.itec.service.CarreraService;
 import com.itec.service.impl.CarreraServiceImpl;
 import com.itec.service.ComisionService;
@@ -36,6 +42,7 @@ import com.itec.service.ProfesorService;
 import com.itec.service.impl.ProfesorServiceImpl;
 import com.itec.view.AlumnoView;
 import com.itec.view.AsistenciaView;
+import com.itec.view.AuthView;
 import com.itec.view.CarreraView;
 import com.itec.view.InscripcionView;
 import com.itec.view.MenuPrincipalView;
@@ -57,6 +64,18 @@ import com.itec.view.ProfesorView;
 public class Main {
 
     public static void main(String[] args) {
+        // 0. Autenticacion (US-AUTH-01): el login se ejecuta antes que nada.
+        //    Si se agotan los 3 intentos, el programa termina.
+        UsuarioRepository usuarioRepository = new UsuarioRepositoryImpl();
+        AuthService authService = new AuthServiceImpl(usuarioRepository);
+        AuthController authController = new AuthController(authService);
+        AuthView authView = new AuthView(authController);
+        Usuario usuario = authView.mostrarLogin();
+        if (usuario == null) {
+            System.out.println("Sesion bloqueada: se agotaron los intentos de acceso");
+            return;
+        }
+
         // 1. Repositorios (persistencia en memoria). Las colecciones son
         //    static en los Impl: las instancias comparten la misma "tabla".
         AlumnoRepository alumnoRepository = new AlumnoRepositoryImpl();
@@ -104,10 +123,12 @@ public class Main {
         AsistenciaView asistenciaView = new AsistenciaView(asistenciaController, comisionController);
         CarreraView carreraView = new CarreraView(carreraController);
 
-        // 6. Menu principal
+        // 6. Menu principal (filtrado por el rol del usuario logueado)
         MenuPrincipalView menuPrincipalView = new MenuPrincipalView(
+                usuario.getRol(),
                 alumnoView, profesorView, materiaView, inscripcionView, notaView,
                 asistenciaView, carreraView);
         menuPrincipalView.mostrar();
+        authController.cerrarSesion();
     }
 }

@@ -52,7 +52,7 @@ académicas ("promedio ≥ 6 para aprobar") se calculan a mano en planillas suel
 | **Asistencias** | Registro binario PRESENTE/AUSENTE con fecha del día (solo inscriptos), listado por comisión |
 | **Carreras y Planes de Estudio** | Alta de carreras (nombre único), planes con vigencia por rango de años, asociación de materias existentes al plan (sin duplicados), listado jerárquico Carrera → Plan → Materias |
 
-Detalles de implementación por módulo: ver `document/Documentacion_Funcional.md`
+Detalles de implementación por módulo: ver `Documentacion_Funcional.md`
 (épicas, user stories, criterios de aceptación y casos de prueba).
 
 ---

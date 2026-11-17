@@ -1,25 +1,27 @@
-package com.itec.service;
+package com.itec.service.impl;
 
-import com.itec.model.Profesor;
-import com.itec.repository.ProfesorRepository;
+import com.itec.service.AlumnoService;
+
+import com.itec.model.Alumno;
+import com.itec.repository.AlumnoRepository;
 
 /**
- * Implementacion del servicio de profesores: logica de negocio y validaciones.
+ * Implementacion del servicio de alumnos: logica de negocio y validaciones.
  * <p>
- * Recibe el ProfesorRepository por constructor (inyeccion de dependencias) e
+ * Recibe el AlumnoRepository por constructor (inyeccion de dependencias) e
  * interactua con la interfaz del repositorio. No imprime en consola ni usa
  * Scanner: devuelve resultados y mensajes para que la Vista los presente.
  */
-public class ProfesorServiceImpl implements ProfesorService {
+public class AlumnoServiceImpl implements AlumnoService {
 
-    private final ProfesorRepository repository;
+    private final AlumnoRepository repository;
 
-    public ProfesorServiceImpl(ProfesorRepository repository) {
+    public AlumnoServiceImpl(AlumnoRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public String crearProfesor(String nombre, String apellido, String dni, String mail, String telefono) {
+    public String crearAlumno(String nombre, String apellido, String dni, String mail, String telefono) {
         nombre = normalizar(nombre);
         apellido = normalizar(apellido);
         dni = normalizar(dni);
@@ -36,13 +38,13 @@ public class ProfesorServiceImpl implements ProfesorService {
             return MSG_MAIL_INVALIDO;
         }
 
-        Profesor profesor = new Profesor(nombre, apellido, dni, mail, telefono, true);
-        repository.guardar(profesor);
+        Alumno alumno = new Alumno(nombre, apellido, dni, mail, telefono, true);
+        repository.guardar(alumno);
         return MSG_CREADO;
     }
 
     @Override
-    public Profesor buscarProfesor(String dni) {
+    public Alumno buscarAlumno(String dni) {
         if (normalizar(dni) == null) {
             return null;
         }
@@ -50,28 +52,28 @@ public class ProfesorServiceImpl implements ProfesorService {
     }
 
     @Override
-    public String darDeBajaLogica(String dni) {
-        Profesor profesor = buscarProfesor(dni);
-        if (profesor == null) {
-            return MSG_NO_ENCONTRADO;
-        }
-        if (!profesor.isActivo()) {
-            return MSG_YA_INACTIVO;
-        }
-        profesor.setActivo(false);
-        return MSG_DADO_DE_BAJA;
-    }
-
-    @Override
-    public java.util.List<Profesor> listarTodos() {
+    public java.util.List<Alumno> listarTodos() {
         return repository.obtenerTodos();
     }
 
     @Override
-    public String modificarProfesor(String dni, String nuevoNombre, String nuevoApellido,
-                                    String nuevoMail, String nuevoTelefono) {
-        Profesor profesor = buscarProfesor(dni);
-        if (profesor == null) {
+    public String darDeBajaLogica(String dni) {
+        Alumno alumno = buscarAlumno(dni);
+        if (alumno == null) {
+            return MSG_NO_ENCONTRADO;
+        }
+        if (!alumno.isActivo()) {
+            return MSG_YA_INACTIVO;
+        }
+        alumno.setActivo(false);
+        return MSG_DADO_DE_BAJA;
+    }
+
+    @Override
+    public String modificarAlumno(String dni, String nuevoNombre, String nuevoApellido,
+                                  String nuevoMail, String nuevoTelefono) {
+        Alumno alumno = buscarAlumno(dni);
+        if (alumno == null) {
             return MSG_NO_ENCONTRADO;
         }
 
@@ -88,10 +90,10 @@ public class ProfesorServiceImpl implements ProfesorService {
         }
 
         // El DNI no se modifica: es la clave de negocio del repositorio.
-        profesor.setNombre(nombre);
-        profesor.setApellido(apellido);
-        profesor.setMail(mail);
-        profesor.setTelefono(telefono);
+        alumno.setNombre(nombre);
+        alumno.setApellido(apellido);
+        alumno.setMail(mail);
+        alumno.setTelefono(telefono);
         return MSG_MODIFICADO;
     }
 

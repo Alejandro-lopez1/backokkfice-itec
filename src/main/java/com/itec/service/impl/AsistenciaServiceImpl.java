@@ -1,4 +1,6 @@
-package com.itec.service;
+package com.itec.service.impl;
+
+import com.itec.service.AsistenciaService;
 
 import com.itec.model.AlumnoInscripto;
 import com.itec.model.Asistencia;

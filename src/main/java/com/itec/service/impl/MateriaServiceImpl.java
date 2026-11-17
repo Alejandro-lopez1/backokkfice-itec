@@ -1,4 +1,6 @@
-package com.itec.service;
+package com.itec.service.impl;
+
+import com.itec.service.MateriaService;
 
 import com.itec.model.Materia;
 import com.itec.repository.MateriaRepository;

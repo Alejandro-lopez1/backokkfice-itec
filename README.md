@@ -147,8 +147,10 @@ src/main/java/com/itec/
 ├── Main.java          # Composition root: cableado de implementaciones
 ├── config/            # DataSeeder (datos de demostración)
 ├── model/             # 11 entidades POJO + 2 enums
-├── repository/        # Interfaces + Impl (HashMap/ArrayList estáticos)
-├── service/           # Interfaces + Impl (lógica de negocio)
+├── repository/        # Interfaces de repositorio
+│   └── impl/          # Implementaciones (HashMap/ArrayList estáticos)
+├── service/           # Interfaces de service (lógica de negocio)
+│   └── impl/          # Implementaciones (reglas y validaciones)
 ├── controller/        # Controladores delgados
 └── view/              # Menús de consola + ConsoleInput (Scanner único)
 ```

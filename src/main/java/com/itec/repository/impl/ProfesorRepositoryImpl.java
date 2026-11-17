@@ -1,4 +1,6 @@
-package com.itec.repository;
+package com.itec.repository.impl;
+
+import com.itec.repository.ProfesorRepository;
 
 import com.itec.model.Profesor;
 

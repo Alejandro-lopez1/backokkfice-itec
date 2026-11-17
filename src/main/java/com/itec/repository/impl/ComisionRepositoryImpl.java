@@ -1,4 +1,6 @@
-package com.itec.repository;
+package com.itec.repository.impl;
+
+import com.itec.repository.ComisionRepository;
 
 import com.itec.model.ComisionMateria;
 import com.itec.model.Cuatrimestre;

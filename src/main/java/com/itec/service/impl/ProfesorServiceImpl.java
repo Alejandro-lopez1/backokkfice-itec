@@ -1,25 +1,27 @@
-package com.itec.service;
+package com.itec.service.impl;
 
-import com.itec.model.Alumno;
-import com.itec.repository.AlumnoRepository;
+import com.itec.service.ProfesorService;
+
+import com.itec.model.Profesor;
+import com.itec.repository.ProfesorRepository;
 
 /**
- * Implementacion del servicio de alumnos: logica de negocio y validaciones.
+ * Implementacion del servicio de profesores: logica de negocio y validaciones.
  * <p>
- * Recibe el AlumnoRepository por constructor (inyeccion de dependencias) e
+ * Recibe el ProfesorRepository por constructor (inyeccion de dependencias) e
  * interactua con la interfaz del repositorio. No imprime en consola ni usa
  * Scanner: devuelve resultados y mensajes para que la Vista los presente.
  */
-public class AlumnoServiceImpl implements AlumnoService {
+public class ProfesorServiceImpl implements ProfesorService {
 
-    private final AlumnoRepository repository;
+    private final ProfesorRepository repository;
 
-    public AlumnoServiceImpl(AlumnoRepository repository) {
+    public ProfesorServiceImpl(ProfesorRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public String crearAlumno(String nombre, String apellido, String dni, String mail, String telefono) {
+    public String crearProfesor(String nombre, String apellido, String dni, String mail, String telefono) {
         nombre = normalizar(nombre);
         apellido = normalizar(apellido);
         dni = normalizar(dni);
@@ -36,13 +38,13 @@ public class AlumnoServiceImpl implements AlumnoService {
             return MSG_MAIL_INVALIDO;
         }
 
-        Alumno alumno = new Alumno(nombre, apellido, dni, mail, telefono, true);
-        repository.guardar(alumno);
+        Profesor profesor = new Profesor(nombre, apellido, dni, mail, telefono, true);
+        repository.guardar(profesor);
         return MSG_CREADO;
     }
 
     @Override
-    public Alumno buscarAlumno(String dni) {
+    public Profesor buscarProfesor(String dni) {
         if (normalizar(dni) == null) {
             return null;
         }
@@ -50,28 +52,28 @@ public class AlumnoServiceImpl implements AlumnoService {
     }
 
     @Override
-    public java.util.List<Alumno> listarTodos() {
-        return repository.obtenerTodos();
-    }
-
-    @Override
     public String darDeBajaLogica(String dni) {
-        Alumno alumno = buscarAlumno(dni);
-        if (alumno == null) {
+        Profesor profesor = buscarProfesor(dni);
+        if (profesor == null) {
             return MSG_NO_ENCONTRADO;
         }
-        if (!alumno.isActivo()) {
+        if (!profesor.isActivo()) {
             return MSG_YA_INACTIVO;
         }
-        alumno.setActivo(false);
+        profesor.setActivo(false);
         return MSG_DADO_DE_BAJA;
     }
 
     @Override
-    public String modificarAlumno(String dni, String nuevoNombre, String nuevoApellido,
-                                  String nuevoMail, String nuevoTelefono) {
-        Alumno alumno = buscarAlumno(dni);
-        if (alumno == null) {
+    public java.util.List<Profesor> listarTodos() {
+        return repository.obtenerTodos();
+    }
+
+    @Override
+    public String modificarProfesor(String dni, String nuevoNombre, String nuevoApellido,
+                                    String nuevoMail, String nuevoTelefono) {
+        Profesor profesor = buscarProfesor(dni);
+        if (profesor == null) {
             return MSG_NO_ENCONTRADO;
         }
 
@@ -88,10 +90,10 @@ public class AlumnoServiceImpl implements AlumnoService {
         }
 
         // El DNI no se modifica: es la clave de negocio del repositorio.
-        alumno.setNombre(nombre);
-        alumno.setApellido(apellido);
-        alumno.setMail(mail);
-        alumno.setTelefono(telefono);
+        profesor.setNombre(nombre);
+        profesor.setApellido(apellido);
+        profesor.setMail(mail);
+        profesor.setTelefono(telefono);
         return MSG_MODIFICADO;
     }
 

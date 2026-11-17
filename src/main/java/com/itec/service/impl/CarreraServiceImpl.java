@@ -1,4 +1,6 @@
-package com.itec.service;
+package com.itec.service.impl;
+
+import com.itec.service.CarreraService;
 
 import com.itec.model.Carrera;
 import com.itec.model.Materia;

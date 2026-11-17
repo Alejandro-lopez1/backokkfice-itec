@@ -422,7 +422,7 @@ Escenario: colision de nombre
 
 | ID | Pasos | Resultado esperado |
 |---|---|---|
-| MAT-TC06 | Menú 3 → 4 → renombrar una materia | "Materia modificada con exito"; buscable solo bajo el nombre nuevo |
+| MAT-TC06 | Menú 3 → 3 → renombrar una materia | "Materia modificada con exito"; buscable solo bajo el nombre nuevo |
 | MAT-TC07 | Renombrar a un nombre ya existente | "ERROR: ya existe una materia con ese nombre" |
 | MAT-TC08 | Renombrar con Enter vacío y datos cambiados | Solo cambian año/cuatrimestre; nombre intacto |
 
@@ -436,7 +436,7 @@ Escenario: colision de nombre
 
 | ID | Pasos | Resultado esperado |
 |---|---|---|
-| MAT-TC09 | Menú 3 → 3 → materia activa | "Materia dada de baja (baja logica)"; aparece INACTIVA en el listado |
+| MAT-TC09 | Menú 3 → 4 → materia activa | "Materia dada de baja (baja logica)"; aparece INACTIVA en el listado |
 | MAT-TC10 | Repetir la baja | "ERROR: la materia ya se encuentra inactiva" |
 
 **US-MAT-05 — Agregar correlativa**

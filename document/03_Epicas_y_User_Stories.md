@@ -199,7 +199,7 @@ reflexiva de correlativas y re-claveo al renombrar.
 - **Prioridad**: Media
 - **Dependencias**: US-MAT-01
 - **Reglas de Negocio asociadas**: RN-MAT-02, RN-MAT-03, RN-MAT-11
-- **Implementación**: `MateriaServiceImpl.modificarMateria` · `MateriaView` (opción 4)
+- **Implementación**: `MateriaServiceImpl.modificarMateria` · `MateriaView` (opción 3)
 
 ### US-MAT-03 — Baja lógica de materia
 
@@ -211,7 +211,7 @@ reflexiva de correlativas y re-claveo al renombrar.
 - **Prioridad**: Media
 - **Dependencias**: US-MAT-01
 - **Reglas de Negocio asociadas**: RN-MAT-05, RN-MAT-06, RN-MAT-07 (efecto en dictado)
-- **Implementación**: `MateriaServiceImpl.darDeBajaLogica` · `MateriaView` (opción 3)
+- **Implementación**: `MateriaServiceImpl.darDeBajaLogica` · `MateriaView` (opción 4)
 
 ### US-MAT-04 — Definir correlativas
 

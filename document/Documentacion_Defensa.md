@@ -411,9 +411,10 @@ diagrama Mermaid del README.
   reciben el usuario. Es el límite documentado en RN-AUTH-04, pendiente de
   Fase 2 junto con la gestión de cuentas.
 - *"¿Los tests están automatizados?"* → No: los 74 TC de
-  `05_Casos_de_Prueba.md` son **pruebas manuales** por consola (no hay
-  JUnit ni `src/test` en el repo); la arquitectura por capas permite
-  agregar una suite sin tocar el código.
+  `05_Casos_de_Prueba.md` están **documentados** para ejecución manual y no
+  se ejecutaron caso por caso (no hay JUnit ni `src/test` en el repo); lo
+  verificado hasta ahora son pruebas de humo de los flujos principales. La
+  arquitectura por capas permite automatizarlos sin tocar el código.
 - *"¿Y la auditoría?"* → `AuditService` + `AuditRepositoryImpl` nuevos,
   cableados en el `Main`; los services existentes agregan una línea, nada más.
 
@@ -479,5 +480,5 @@ Otras decisiones de nomenclatura/alcance, también documentadas:
   (el MVP no crea inscripciones por carrera).
 
 Con esto, el modelo de objetos cumple el diagrama definitivo sin sacrificar
-ninguna regla de negocio aprobada (74 casos de prueba manuales, sin suite
-automatizada — ver `05_Casos_de_Prueba.md`).
+ninguna regla de negocio (74 casos de prueba **documentados**, no ejecutados
+caso por caso — ver `05_Casos_de_Prueba.md`).

@@ -4,13 +4,13 @@
 > código implementa hoy** (commit actual), organizada en Épicas, User Stories,
 > Reglas de Negocio, Criterios de Aceptación (Gherkin) y Casos de Prueba (TC).
 >
-> Convención: los TC marcados como **Aprobado** fueron verificados **manualmente**
-> contra la aplicación real durante el desarrollo (pruebas por consola sobre
-> datos sembrados por el `DataSeeder`). **No hay suite automatizada**: el
-> repositorio no incluye JUnit ni directorio `src/test`. La suite canónica
-> con el detalle por módulo y el conteo total (74 TC) vive en
-> `05_Casos_de_Prueba.md`; las tablas por épicas de este documento son el
-> detalle narrativo de cada épica.
+> Convención: los TC de este documento están **documentados** (resultados
+> esperados extraídos del código), **no ejecutados caso por caso**: no hay
+> suite automatizada (el repositorio no incluye JUnit ni directorio
+> `src/test`) y la verificación existente es una prueba de humo de los
+> flujos principales. La suite canónica con el detalle por módulo y el
+> conteo total (74 TC) vive en `05_Casos_de_Prueba.md`; las tablas por
+> épicas de este documento son el detalle narrativo de cada épica.
 
 ---
 
@@ -806,12 +806,12 @@ anti-duplicado de asistencia por día por inscripto.
 
 ## 4. Resumen de Casos de Prueba
 
-> Verificación **manual** por consola; **no hay suite automatizada** en el
-> repositorio (sin JUnit ni directorio `src/test`). El detalle fila por fila
-> de los TC está en `05_Casos_de_Prueba.md` (suite canónica); esta tabla
+> Los 74 TC están **documentados**, no ejecutados caso por caso (no hay
+> suite automatizada: sin JUnit ni directorio `src/test`). El detalle fila
+> por fila está en `05_Casos_de_Prueba.md` (suite canónica); esta tabla
 > resume el conteo por módulo.
 
-| Módulo | Total TC | Aprobados (verificación manual) | Pendientes |
+| Módulo | Total TC | Documentados | Pendientes de documentar |
 |---|---|---|---|
 | AUTH (login real por roles) | 7 | 7 | 0 |
 | ALU — Alumnos | 13 | 13 | 0 |

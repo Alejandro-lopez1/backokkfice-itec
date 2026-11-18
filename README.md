@@ -81,7 +81,7 @@ Tanto los services como los repositorios se definen mediante una **interfaz** (`
 
 - Las capas altas dependen de **contratos**, no de implementaciones.
 - Cambiar la estrategia de persistencia (por ejemplo, a archivo o a una BD real) solo exige escribir un nuevo `*RepositoryImpl` y modificar una línea del `Main`.
-- Facilita el testing aislado de cada capa (la verificación del proyecto es **manual por consola**: no hay suite automatizada, el repo no incluye JUnit ni `src/test`).
+- Facilita el testing aislado de cada capa (el proyecto **no tiene suite automatizada**: no hay JUnit ni `src/test`; los 74 TC están documentados en `document/05_Casos_de_Prueba.md` para ejecución manual, y hasta ahora la verificación fue por pruebas de humo de los flujos principales).
 
 ### Inyección de Dependencias
 

@@ -12,7 +12,12 @@ El sistema permite administrar el ciclo académico completo de un instituto desd
 - **Dictado**: Comisiones por cuatrimestre con profesor asignado e inscripción de alumnos.
 - **Seguimiento**: carga de Notas por tipo de evaluación (con promoción automática a APROBADO si el promedio es ≥ 6), consulta de notas por alumno (US-NOT-03) y registro de Asistencias (presente/ausente por fecha).
 
-Al arrancar, el sistema carga un set de datos de demostración (`DataSeeder`) con alumnos, profesores, materias, comisiones, carreras y planes ya vinculados, para poder operar de inmediato.
+Al arrancar, el sistema pide el acceso por consola (cuentas de demostración precargadas) y luego carga un set de datos de demostración (`DataSeeder`) con alumnos, profesores, materias, comisiones, carreras y planes ya vinculados, para poder operar de inmediato.
+
+> **Alcance de la persistencia**: todo vive en memoria (`HashMap`/`ArrayList`
+> estáticos). Al cerrar el programa **los datos se pierden** y en el próximo
+> arranque vuelve a sembrarse el set de demostración: no hay persistencia
+> entre reinicios.
 
 ## Tecnologías
 
@@ -20,7 +25,7 @@ Al arrancar, el sistema carga un set de datos de demostración (`DataSeeder`) co
 |---|---|
 | **Java 17 (JDK)** | Lenguaje y librería estándar únicamente (sin Spring, Hibernate ni Lombok) |
 | **Maven 3.9** (con Maven Wrapper) | Gestión del build, sin dependencias externas |
-| **Persistencia en memoria** | `HashMap` y `ArrayList` estáticos dentro de las clases Repository, simulando tablas de una base de datos |
+| **Persistencia en memoria** | `HashMap` y `ArrayList` estáticos dentro de las clases Repository, simulando tablas de una base de datos (sin persistencia entre reinicios) |
 | **Interfaz de usuario** | Consola: menús con `System.out` y lectura con `Scanner` |
 
 ## Compilación y ejecución
@@ -39,7 +44,8 @@ Requisito previo: tener **JDK 17** instalado. Maven no es necesario: el proyecto
 java -jar target/backoffice-academico.jar
 ```
 
-Al iniciar, se despliega el menú principal:
+Al iniciar se pide el acceso (usuarios de demostración abajo) y, una vez
+logueado, se despliega el menú principal del rol (ejemplo: ADMIN):
 
 ```
 ############################
@@ -75,7 +81,7 @@ Tanto los services como los repositorios se definen mediante una **interfaz** (`
 
 - Las capas altas dependen de **contratos**, no de implementaciones.
 - Cambiar la estrategia de persistencia (por ejemplo, a archivo o a una BD real) solo exige escribir un nuevo `*RepositoryImpl` y modificar una línea del `Main`.
-- Facilita el testing aislado de cada capa.
+- Facilita el testing aislado de cada capa (la verificación del proyecto es **manual por consola**: no hay suite automatizada, el repo no incluye JUnit ni `src/test`).
 
 ### Inyección de Dependencias
 
@@ -107,8 +113,9 @@ graph TD
 
 ### 0. Acceso por roles (US-AUTH-01)
 - Login por consola con máximo **3 intentos** (`Sesion bloqueada: se agotaron los intentos de acceso` si se agotan).
-- Usuarios sembrados: `admin/admin123` (ADMIN), `docente/docente123` (DOCENTE), `alumno/alumno123` (ALUMNO).
-- Menú principal **filtrado por rol**: ADMIN ve los 7 módulos; DOCENTE solo Notas y Asistencias; ALUMNO solo la consulta de sus datos (placeholder).
+- **Cuentas de demostración precargadas** (`UsuarioRepositoryImpl`): `admin/admin123` (ADMIN), `docente/docente123` (DOCENTE), `alumno/alumno123` (ALUMNO). Las contraseñas se comparan en **texto plano** y no hay gestión de cuentas: es alcance de demostración académica, **no un sistema listo para producción**.
+- Menú principal **filtrado por rol**: ADMIN ve los 7 módulos; DOCENTE solo Notas y Asistencias; ALUMNO solo `1. Consultar mis datos`, que es un **placeholder** que muestra `Funcionalidad en desarrollo: proximamente podra consultar sus datos academicos` (la consulta real es Fase 2).
+- **Límite de autorización**: el control de permisos ocurre **solo al armar el menú**. Los servicios no reciben el usuario ni validan rol ni pertenencia a la comisión; no se afirma autorización completa a nivel de negocio.
 
 ### 1. Gestión de Alumnos
 - Crear alumno (valida DNI único, mail con `@`, campos obligatorios).

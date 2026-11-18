@@ -113,7 +113,7 @@
 | ID | Descripción | Implementación |
 |---|---|---|
 | RN-TRA-01 | **Persistencia en memoria**: colecciones `private static final` (una "tabla" por repositorio, compartida por todas las instancias); `obtenerTodos()` devuelve una **copia** defensiva y toda mutación pasa por los métodos del repositorio (upsert vía `guardar`) | `*RepositoryImpl` (`repository.impl`) |
-| RN-TRA-02 | **Copia defensiva**: los constructores de entidades que reciben listas (`Materia`, `PlanEstudio`, `Carrera`) copian la lista entrante (`new ArrayList<>(...)`); una `List.of()` inmutable no puede envenenar el estado interno | Constructores de `Materia`, `PlanEstudio`, `Carrera` |
+| RN-TRA-02 | **Copia defensiva**: los constructores de entidades que reciben listas (`Materia`, `PlanEstudio`, `Carrera`) copian la lista entrante (`new ArrayList<>(...)`); una `List.of()` inmutable no puede envenenar el estado interno. En `Materia` el encapsulamiento es total: el setter también copia y el getter de correlativas devuelve una **vista no modificable**, de modo que la relación solo se modifica vía `Materia.agregarCorrelativa` | Constructores de `Materia`, `PlanEstudio`, `Carrera` + `Materia.setListaCorrelativas/getListaCorrelativas` |
 | RN-TRA-03 | **`LocalDate` para fechas**: comparaciones correctas y parseo `dd/MM/yyyy` en las vistas; nunca `String` como fecha de dominio | `Cuatrimestre`, `PlanEstudio`, `Examen`, `Asistencia` + vistas |
 | RN-TRA-04 | **Enums para estados y tipos**: `EstadoCursada` (REGULAR, APROBADO, RECURSA), `TipoEvaluacion` (TP, PARCIAL, RECUPERATORIO, FINAL); no se usan strings mágicos | `model.EstadoCursada`, `model.TipoEvaluacion` |
 | RN-TRA-05 | **Inyección de dependencias desde el `Main`**: única clase que referencia los `*Impl` (composition root); el resto del sistema depende solo de interfaces (`repository.*` y `service.*`) | `Main.main` |
@@ -127,12 +127,13 @@
 | RN-AUTH-01 | **Credenciales válidas**: el username debe existir en el repositorio de usuarios y la contraseña debe coincidir exactamente. Si ambas son correctas se inicia la sesión y se da la bienvenida con el formato `Bienvenido, {username} ({ROL})`; si no, la autenticación devuelve null | `AuthServiceImpl.autenticar` / `AuthView.mostrarLogin` | `Credenciales invalidas` |
 | RN-AUTH-02 | **Máximo 3 intentos de login**: tras 3 credenciales inválidas consecutivas se bloquea la sesión y el programa termina de forma controlada; en cada fallo se informa el intento consumido (`Intento n de 3`) | `AuthView.mostrarLogin` (`MAX_INTENTOS`) | `Sesion bloqueada: se agotaron los intentos de acceso` |
 | RN-AUTH-03 | **Menú filtrado por rol**: el menú principal muestra solo las opciones del rol logueado — ADMIN: todos los módulos del backoffice; DOCENTE: solo Notas y Asistencias; ALUMNO: solo la consulta de sus datos (placeholder) y Salir | `MenuPrincipalView.mostrarMenuAdmin/Docente/Alumno` | — (filtrado por diseño) |
+| RN-AUTH-04 | **Límite del filtrado (documentado)**: la verificación de rol ocurre **solo al armar el menú principal**; los `*Service` no reciben el usuario ni validan rol ni pertenencia a la comisión — no hay autorización a nivel de negocio. Además las contraseñas se comparan en texto plano y las 3 cuentas están precargadas (alcance de demostración, sin gestión de usuarios ni cifrado) | `MenuPrincipalView` (único punto de control) · `AuthServiceImpl.autenticar` (comparación exacta) | — (límite de alcance, Fase 2) |
 
 ---
 
 ### Resumen
 
-**72 reglas documentadas**: 8 de Alumnos, 8 de Profesores, 12 de Materias,
+**73 reglas documentadas**: 8 de Alumnos, 8 de Profesores, 12 de Materias,
 12 de Comisiones, 8 de Notas, 4 de Asistencias, 10 de Carreras y Planes,
-7 transversales y 3 de Acceso. Cada una es verificable en el código citado
+7 transversales y 4 de Acceso. Cada una es verificable en el código citado
 y sus mensajes coinciden exactamente con las constantes `MSG_*` de los services.

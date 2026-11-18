@@ -34,10 +34,13 @@ el rol del usuario logueado.
 - **Implementación**: `AuthServiceImpl.autenticar` / `AuthView.mostrarLogin`
   (login con 3 intentos) · `MenuPrincipalView` (menú filtrado por rol) ·
   `UsuarioRepositoryImpl` (3 cuentas sembradas: admin, docente, alumno)
-- **Alcance actual**: la sesión es única por consola y las 3 cuentas están
-  hardcodeadas en el repositorio (sin alta/edición de usuarios ni
-  contraseñas cifradas). Futuras iteraciones podrían agregar gestión de
-  cuentas, pero el acceso por rol ya es real.
+- **Alcance actual**: las 3 cuentas están sembradas en el repositorio con
+  contraseñas en texto plano (alcance de demostración; sin alta/edición de
+  usuarios ni cifrado). El filtrado de permisos ocurre **solo al armar el
+  menú principal**: los services no reciben el usuario ni validan rol o
+  comisión (límite documentado en RN-AUTH-04). La opción del menú ALUMNO
+  ("Consultar mis datos") es un **placeholder** con aviso de funcionalidad
+  en desarrollo: la consulta real es Fase 2 y no está implementada.
 
 ---
 

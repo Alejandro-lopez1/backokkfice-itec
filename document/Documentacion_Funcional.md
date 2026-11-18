@@ -4,56 +4,60 @@
 > código implementa hoy** (commit actual), organizada en Épicas, User Stories,
 > Reglas de Negocio, Criterios de Aceptación (Gherkin) y Casos de Prueba (TC).
 >
-> Convención: los TC marcados como **Aprobado** fueron verificados manualmente
+> Convención: los TC marcados como **Aprobado** fueron verificados **manualmente**
 > contra la aplicación real durante el desarrollo (pruebas por consola sobre
-> datos sembrados por el `DataSeeder`).
+> datos sembrados por el `DataSeeder`). **No hay suite automatizada**: el
+> repositorio no incluye JUnit ni directorio `src/test`. La suite canónica
+> con el detalle por módulo y el conteo total (74 TC) vive en
+> `05_Casos_de_Prueba.md`; las tablas por épicas de este documento son el
+> detalle narrativo de cada épica.
 
 ---
 
 ## 1. Épicas y User Stories Implementadas
 
-### EPIC-AUTH — Acceso y Roles (sesión simulada)
+### EPIC-AUTH — Acceso y Roles
 
-**Descripción**: control de acceso al sistema. El código actual **no implementa
-autenticación**: `Main` inicia directamente `MenuPrincipalView`, que asume una
-sesión única de operador con acceso a los 7 módulos. Se documenta el flujo
-simulado tal como se comporta la consola hoy.
+**Descripción**: control de acceso al sistema. Al arrancar, `Main` ejecuta el
+login (`AuthView.mostrarLogin`) **antes** de cualquier menú: usuario y
+contraseña con máximo 3 intentos; si se agotan, el programa termina con
+`Sesion bloqueada: se agotaron los intentos de acceso`. Autenticado el
+usuario, `MenuPrincipalView` arma el menú principal **filtrado según su rol**.
 
-**US-AUTH-01 — Sesión de operador único**
-- *Como* personal administrativo del ITEC, *quiero* abrir una sesión de
-  operación inmediata al ejecutar el sistema, *para* comenzar a trabajar sin
-  pasos previos.
-- **Prioridad**: Alta (como flujo MVP) / la autenticación real es Fase 2.
-- **Reglas de negocio (código actual)**:
-  - No hay login: la sesión inicia como **Operador (rol único, permisos
-    ADM+DOC unificados)**.
-  - El operador ve el menú principal con los 7 módulos y `0. Salir`.
+**US-AUTH-01 — Iniciar sesión (roles ADMIN, DOCENTE, ALUMNO)**
+- *Como* personal del ITEC, *quiero* autenticarme con mi cuenta para acceder
+  solo a las funciones que me corresponden.
+- **Prioridad**: Alta (definida en el enunciado) — **Estado: IMPLEMENTADA**.
+- **Reglas de negocio (código actual)**: RN-AUTH-01, RN-AUTH-02, RN-AUTH-03,
+  RN-AUTH-04.
+  - Las 3 cuentas están **precargadas** en `UsuarioRepositoryImpl`
+    (`admin/admin123`, `docente/docente123`, `alumno/alumno123`), con
+    contraseñas en **texto plano**: alcance de demostración académica, sin
+    gestión de usuarios ni cifrado (no es un sistema listo para producción).
+  - Máximo 3 intentos → `Credenciales invalidas` con `Intento n de 3`; al
+    agotarlos → `Sesion bloqueada: se agotaron los intentos de acceso` y fin.
+  - Menú filtrado por rol: ADMIN (7 módulos), DOCENTE (Notas y Asistencias),
+    ALUMNO (solo `1. Consultar mis datos`, **placeholder** que muestra
+    `Funcionalidad en desarrollo...`: la consulta real es Fase 2).
+  - **Límite de autorización**: el control ocurre solo al armar el menú; los
+    `*Service` no reciben el usuario ni validan rol o comisión (RN-AUTH-04).
   - Opción no numérica o fuera de rango → `ERROR: opcion invalida`, el menú
-    se reitera (no cierra).
-  - La sesión termina solo con la opción `0`.
-- **Criterios de Aceptación (Gherkin)**:
+    se reitera (no cierra); la sesión termina con la opción `0`.
+- **Criterios de Aceptación (Gherkin)**: ver escenarios de US-AUTH-01 en
+  `04_Criterios_de_Aceptacion.md`.
 
-```gherkin
-Escenario: apertura de sesion simulada
-  DADO que el usuario ejecuta el sistema por consola
-  CUANDO la aplicacion arranca
-  ENTONCES se muestra el menu principal sin solicitar credenciales
-  Y todos los modulos quedan accesibles para la sesion
-
-Escenario: opcion invalida no corta la sesion
-  DADO que se muestra el menu principal
-  CUANDO el usuario ingresa una opcion inexistente o no numerica
-  ENTONCES el sistema muestra "ERROR: opcion invalida"
-  Y reitera el menu principal
-```
-
-- **Casos de prueba**:
+**Casos de prueba** (detallados en `05_Casos_de_Prueba.md`, TC-AUTH-01 a 07;
+verificación **manual**, sin suite automatizada):
 
 | ID | Pasos | Resultado esperado |
 |---|---|---|
-| AUTH-TC01 | Ejecutar `mvnw clean compile exec:java` | Menú principal visible con los 7 módulos + salir |
-| AUTH-TC02 | Ingresar `9` y luego `abc` | Dos veces `ERROR: opcion invalida`; el menú se reitera |
-| AUTH-TC03 | Ingresar `0` | Mensaje de despedida y fin del programa |
+| TC-AUTH-01 | Ejecutar `mvnw clean compile exec:java`, ingresar `admin` / `admin123` | `Bienvenido, admin (ADMIN)`; menú con los 7 módulos + salir |
+| TC-AUTH-02 | Ingresar `docente` / `docente123` | Menú solo con `1. Notas`, `2. Asistencias` y `0. Salir` |
+| TC-AUTH-03 | Ingresar `alumno` / `alumno123` | Menú solo con `1. Consultar mis datos` (placeholder con aviso) y `0. Salir` |
+| TC-AUTH-04 | Contraseña errónea y luego reintento válido | `Credenciales invalidas` / `Intento 1 de 3`; luego sesión iniciada |
+| TC-AUTH-05 | Tres credenciales inválidas seguidas | Tres fallos; al 3° → `Sesion bloqueada: se agotaron los intentos de acceso` y fin |
+| TC-AUTH-06 | Opción `9` y luego `abc` en el menú | Dos veces `ERROR: opcion invalida`; menú reiterado con la sesión activa |
+| TC-AUTH-07 | Opción `0` | `Hasta luego!` y fin del programa |
 
 ---
 
@@ -744,7 +748,7 @@ Materias, con materias compartidas por instancia con el repositorio.
 
 | Módulo | User Story | ¿Implementado? | ¿Dónde está en el código? |
 |---|---|---|---|
-| AUTH | US-AUTH-01 Sesión de operador único | Sí (simulada, sin login) | `Main.main` (arranque directo) · `view/MenuPrincipalView.mostrar()` · `view/ConsoleInput` |
+| AUTH | US-AUTH-01 Iniciar sesión (roles) | Sí (login real) | `AuthView.mostrarLogin` · `AuthServiceImpl.autenticar` · `UsuarioRepositoryImpl` (3 cuentas sembradas) · `MenuPrincipalView` (menú filtrado por rol; opción ALUMNO es placeholder) |
 | ALU | US-ALU-01 Alta de alumno | Sí | `AlumnoServiceImpl.crearAlumno` · `AlumnoRepositoryImpl.guardar/existeDni` |
 | ALU | US-ALU-02 Búsqueda por DNI | Sí | `AlumnoServiceImpl.buscarAlumno` · `AlumnoRepositoryImpl.buscarPorDni` |
 | ALU | US-ALU-03 Listado del padrón | Sí | `AlumnoServiceImpl.listarTodos` · `AlumnoRepositoryImpl.obtenerTodos` · `AlumnoView` (opción 4) |
@@ -775,7 +779,7 @@ Materias, con materias compartidas por instancia con el repositorio.
 | Anexo | Múltiples parciales/recuperatorios con lógica propia | **No** (Fase 2: el tipo existe, la política no) | `TipoEvaluacion` (enum ya disponible) |
 | Anexo | Cierre de acta y auditoría | **No** (Fase 2) | — |
 | Anexo | Reportes (riesgo, libro de actas) | **No** (Fase 2) | — |
-| Anexo | Seguridad por roles (ADM/DOC) | **No** (Fase 2) | — |
+| Anexo | Autorización en services / gestión de cuentas | **No** (Fase 2: el login y el menú por rol sí están implementados) | `MenuPrincipalView` hoy es el único punto de control (RN-AUTH-04) |
 
 ---
 
@@ -793,90 +797,32 @@ punto de extensión.
 | **Múltiples parciales y recuperatorios con lógica propia** | El MVP trata toda evaluación igual en el promedio (≥ 6 aprueba) | `TipoEvaluacion` ya distingue TP/PARCIAL/RECUPERATORIO/FINAL; una política por tipo es una regla nueva en `NotaServiceImpl` (el vínculo `Examen`↔`Nota`↔`AlumnoInscripto` ya modela la historia completa) |
 | **Cierre de acta y auditoría** | Requiere concepto de "cierre" (estado final de comisión) y trazabilidad de quién modificó qué, fuera del MVP | **Auditoría**: `AuditService` + `AuditRepositoryImpl` nuevos, cableados en el `Main`; los `*ServiceImpl` agregan una línea por operación; vistas y controllers no cambian. **Acta**: el estado `APROBADO` con `notaFinal` por inscripto ya es la materia prima del acta |
 | **Reportes (alumnos en riesgo, libro de actas)** | Agregaciones estadísticas no esenciales para el ciclo MVP | Los repositorios exponen `obtenerTodos()` con copias defensivas: un `ReporteService` se agrega sobre las interfaces existentes (ej: inscriptos con % asistencia < 70% = "en riesgo") |
-| **Seguridad por roles (DOC vs ADM)** | La autenticación misma no estaba en el MVP (sesión única de operador) | El punto de entrada es único (`Main` → `MenuPrincipalView`): un filtrado de menú por rol se inserta entre ambos sin tocar services ni repositorios; los roles vendrían de un `UsuarioService` nuevo |
+| **Autorización en services, gestión de usuarios y contraseñas cifradas** | El login real y el filtrado de menú por rol ya están en el MVP (US-AUTH-01), pero la verificación de permisos ocurre **solo al armar el menú**: los services no reciben el usuario ni validan rol/comisión | Los `*ServiceImpl` ya son el punto único de decisión: agregarles una validación de sesión/rol no cambia vistas ni repositorios; las cuentas viven en `UsuarioRepositoryImpl`, listo para un `UsuarioService` de alta/edición |
 
 Además, queda como mejora técnica menor detectada y no priorizada:
 anti-duplicado de asistencia por día por inscripto.
 
 ---
 
-## 4. Resumen de Casos de Prueba (Tabla Final)
+## 4. Resumen de Casos de Prueba
 
-| ID | Descripción | Resultado esperado | Estado |
+> Verificación **manual** por consola; **no hay suite automatizada** en el
+> repositorio (sin JUnit ni directorio `src/test`). El detalle fila por fila
+> de los TC está en `05_Casos_de_Prueba.md` (suite canónica); esta tabla
+> resume el conteo por módulo.
+
+| Módulo | Total TC | Aprobados (verificación manual) | Pendientes |
 |---|---|---|---|
-| AUTH-TC01 | Arranque muestra el menú principal | Menú con 7 módulos + salir | Aprobado |
-| AUTH-TC02 | Opción inválida no corta la sesión | `ERROR: opcion invalida` y menú reiterado | Aprobado |
-| AUTH-TC03 | Opción 0 finaliza | Salida controlada del programa | Aprobado |
-| ALU-TC01 | Alta de alumno válida | "Alumno creado con exito" | Aprobado |
-| ALU-TC02 | Alta con DNI duplicado | "ERROR: DNI ya registrado" | Aprobado |
-| ALU-TC03 | Alta con mail sin `@` | "ERROR: mail invalido (debe contener '@')" | Aprobado |
-| ALU-TC04 | Alta con campos obligatorios vacíos | "ERROR: nombre, apellido y DNI son obligatorios" | Aprobado |
-| ALU-TC05 | Búsqueda por DNI existente | Datos completos del alumno | Aprobado |
-| ALU-TC06 | Búsqueda por DNI inexistente | "ERROR: no existe un alumno con ese DNI" | Aprobado |
-| ALU-TC07 | Listado del padrón | Todos los alumnos con estado (incluye INACTIVO sembrado) | Aprobado |
-| ALU-TC08 | Baja lógica de alumno activo | "Alumno dado de baja (baja logica)"; estado INACTIVO | Aprobado |
-| ALU-TC09 | Doble baja | "ERROR: el alumno ya se encuentra inactivo" | Aprobado |
-| ALU-TC10 | Modificación de alumno con datos válidos | "Alumno modificado con exito" | Aprobado |
-| ALU-TC11 | Verificación post-modificación por búsqueda | Datos actualizados bajo el mismo DNI | Aprobado |
-| ALU-TC12 | Modificación de DNI inexistente | "ERROR: no existe un alumno con ese DNI" | Aprobado |
-| ALU-TC13 | Modificación con mail sin `@` | "ERROR: mail invalido (debe contener '@') (debe contener '@')" | Aprobado |
-| PROF-TC01 | Alta de profesor válida | "Profesor creado con exito" | Aprobado |
-| PROF-TC02 | Alta con DNI duplicado | "ERROR: DNI ya registrado" | Aprobado |
-| PROF-TC03 | Alta con mail sin `@` | "ERROR: mail invalido (debe contener '@')" | Aprobado |
-| PROF-TC04 | Búsqueda por DNI existente | Datos completos del profesor | Aprobado |
-| PROF-TC05 | Búsqueda por DNI inexistente | "ERROR: no existe un profesor con ese DNI" | Aprobado |
-| PROF-TC06 | Baja lógica de profesor activo | "Profesor dado de baja (baja logica)" | Aprobado |
-| PROF-TC07 | Doble baja | "ERROR: el profesor ya se encuentra inactivo" | Aprobado |
-| PROF-TC08 | Listado de todos los profesores | DNI, apellido/nombre, mail y estado | Aprobado |
-| PROF-TC09 | Modificación de profesor con datos válidos | "Profesor modificado con exito" | Aprobado |
-| PROF-TC10 | Verificación post-modificación por búsqueda | Datos actualizados bajo el mismo DNI | Aprobado |
-| PROF-TC11 | Modificación de DNI inexistente | "ERROR: no existe un profesor con ese DNI" | Aprobado |
-| PROF-TC12 | Modificación con mail sin `@` | "ERROR: mail invalido (debe contener '@') (debe contener '@')" | Aprobado |
-| MAT-TC01 | Alta de materia válida | "Materia creada con exito" | Aprobado |
-| MAT-TC02 | Alta con nombre duplicado | "ERROR: ya existe una materia con ese nombre" | Aprobado |
-| MAT-TC03 | Alta con cuatrimestre inválido | "ERROR: el anio debe ser 1 o mayor, y el cuatrimestre 1 o 2" | Aprobado |
-| MAT-TC04 | Búsqueda con correlativas | Lista de correlativas mostrada | Aprobado |
-| MAT-TC05 | Listado de todas las materias | Estado y correlativas por materia | Aprobado |
-| MAT-TC06 | Renombrado con re-claveo | Modificada y buscable solo bajo el nombre nuevo | Aprobado |
-| MAT-TC07 | Renombrar a nombre existente | "ERROR: ya existe una materia con ese nombre" | Aprobado |
-| MAT-TC08 | Modificar manteniendo nombre (Enter vacío) | Solo cambian año/cuatrimestre | Aprobado |
-| MAT-TC09 | Baja lógica de materia | "Materia dada de baja (baja logica)" | Aprobado |
-| MAT-TC10 | Doble baja de materia | "ERROR: la materia ya se encuentra inactiva" | Aprobado |
-| MAT-TC11 | Correlativa válida | "Correlativa agregada con exito" | Aprobado |
-| MAT-TC12 | Correlativa de sí misma | "ERROR: una materia no puede ser correlativa de si misma" | Aprobado |
-| MAT-TC13 | Correlativa duplicada | "ERROR: esa materia ya figura como correlativa" | Aprobado |
-| MAT-TC14 | Correlativa inexistente | "ERROR: no existe una materia con ese nombre" | Aprobado |
-| COM-TC01 | Crear comisión válida | "Comision creada con exito (ID: n)" | Aprobado |
-| COM-TC02 | Comisión duplicada | "ERROR: ya existe una comision igual" | Aprobado |
-| COM-TC03 | Comisión con materia inactiva | "ERROR: la materia esta inactiva" | Aprobado |
-| COM-TC04 | Comisión con profesor inactivo | "ERROR: el profesor esta inactivo" | Aprobado |
-| COM-TC05 | Fechas incoherentes | "ERROR: fechas invalidas" | Aprobado |
-| COM-TC06 | Listado de comisiones | Comisiones con ID, materia, cuatrimestre y profesor | Aprobado |
-| COM-TC07 | Inscripción válida | "Alumno inscripto con exito (comision ID n)" | Aprobado |
-| COM-TC08 | Inscripción duplicada | "ERROR: el alumno ya esta inscripto en esa comision" | Aprobado |
-| COM-TC09 | Inscripción de alumno inactivo | "ERROR: el alumno esta inactivo" | Aprobado |
-| COM-TC10 | Inscripción a comisión inexistente | "ERROR: no existe una comision con ese ID" | Aprobado |
-| NOT-TC01 | Nota 8 promociona | "...El alumno quedo APROBADO (promedio >= 6)" | Aprobado |
-| NOT-TC02 | Segunda nota recalcula promedio | Promedio actualizado sin degradar estado | Aprobado |
-| NOT-TC03 | Nota fuera de rango (20) | "ERROR: la nota debe estar entre 0 y 10" | Aprobado |
-| NOT-TC04 | Nota a no inscripto | "ERROR: el alumno no esta inscripto en esa comision" | Aprobado |
-| NOT-TC05 | Nota a comisión inexistente | "ERROR: no existe una comision con ese ID" | Aprobado |
-| ASIS-TC01 | Registrar PRESENTE | "Asistencia registrada con exito (fecha)" | Aprobado |
-| ASIS-TC02 | Registrar AUSENTE | Registro AUSENTE en el listado | Aprobado |
-| ASIS-TC03 | Asistencia a no inscripto | "ERROR: el alumno no esta inscripto en esa comision" | Aprobado |
-| ASIS-TC04 | Listado por comisión | `dd/MM/yyyy \| PRESENTE/AUSENTE \| alumno` | Aprobado |
-| ASIS-TC05 | Listado de comisión sin registros | Lista vacía sin error | Aprobado |
-| CAR-TC01 | Alta de carrera válida | "Carrera creada con exito" | Aprobado |
-| CAR-TC02 | Alta de carrera duplicada | "ERROR: ya existe una carrera con ese nombre" | Aprobado |
-| CAR-TC03 | Alta de plan válida | "Plan de estudio creado con exito" | Aprobado |
-| CAR-TC04 | Plan con rango de años inválido | "ERROR: el anio de fin no puede ser anterior al de inicio" | Aprobado |
-| CAR-TC05 | Plan duplicado en la carrera | "ERROR: ya existe un plan con ese nombre en la carrera" | Aprobado |
-| CAR-TC06 | Asociación de materia a plan | "Materia asociada al plan con exito" | Aprobado |
-| CAR-TC07 | Asociación duplicada | "ERROR: esa materia ya esta asociada al plan" | Aprobado |
-| CAR-TC08 | Asociación con materia inexistente | "ERROR: no existe una materia con ese nombre" | Aprobado |
-| CAR-TC09 | Listado jerárquico Carrera→Plan→Materias | Jerarquía completa con vigencias y correlativas | Aprobado |
+| AUTH (login real por roles) | 7 | 7 | 0 |
+| ALU — Alumnos | 13 | 13 | 0 |
+| PROF — Profesores | 8 | 8 | 0 |
+| MAT — Materias y Correlativas | 14 | 14 | 0 |
+| COM — Comisiones e Inscripciones | 10 | 10 | 0 |
+| NOT — Notas | 9 | 9 | 0 |
+| ASIS — Asistencias | 5 | 5 | 0 |
+| CAR — Carreras y Planes | 8 | 8 | 0 |
+| **Total** | **74** | **74** | **0** |
 
-**Total: 69 casos de prueba · 69 Aprobados.** Los tres TC de AUTH-01..03
-corresponden al flujo simulado de sesión (sin autenticación real, ver
-EPIC-AUTH); los restantes 66 validan reglas de negocio verificadas contra los
-services.
+Los requerimientos excluidos del MVP (regularidad por asistencia,
+justificaciones, cierre de actas, auditoría e informes) no tienen TC: son
+Fase 2 y quedan documentados como pendientes en `01_Alcance.md`.

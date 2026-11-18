@@ -1,10 +1,13 @@
 # 05 — Casos de Prueba
 
-> Suite de Casos de Prueba (TC) para las funcionalidades **implementadas**,
-> organizada por módulo en el mismo orden que las US de
-> `03_Epicas_y_User_Stories.md`. Los resultados esperados citan los mensajes
-> **exactos** del código (constantes `MSG_*`); los pasos usan la numeración
-> real de los menús de consola, listos para ejecutar en la demo.
+> **Naturaleza de esta suite**: el repositorio **no incluye una suite
+> automatizada** (no hay JUnit ni directorio `src/test`). Este documento es
+> el conjunto **documentado** de casos de prueba (TC) para las
+> funcionalidades **implementadas**, organizada por módulo en el mismo orden
+> que las US de `03_Epicas_y_User_Stories.md`. Los resultados esperados
+> citan los mensajes **exactos** del código (constantes `MSG_*`); los pasos
+> usan la numeración real de los menús de consola y fueron ejecutados
+> **manualmente** por consola sobre la aplicación real.
 >
 > Datos de referencia sembrados por el sistema: usuarios admin / admin123
 > (ADMIN), docente / docente123 (DOCENTE) y alumno / alumno123 (ALUMNO);
@@ -15,9 +18,11 @@
 > Computadoras; carreras Tecnicatura en Programacion y Licenciatura en
 > Sistemas (Plan 2024).
 >
-> Estado `Aprobado`: verificado manualmente contra la aplicación real durante
-> el desarrollo. Ningún TC está en `Pendiente` porque la suite cubre solo
-> funcionalidad implementada (lo de Fase 2 está fuera de alcance del doc).
+> Estado `Aprobado`: **verificación manual** contra la aplicación real durante
+> el desarrollo (no corresponde a un test automatizado). Ningún TC está en
+> `Pendiente` porque el conjunto cubre solo funcionalidad implementada (lo de
+> Fase 2 — regularidad por asistencia, justificaciones, cierre de actas,
+> auditoría e informes — está fuera de alcance del doc).
 
 ---
 
@@ -139,7 +144,9 @@
 
 ## Resumen
 
-| Módulo | Total TC | Aprobados | Pendientes |
+> Verificación **manual** (sin suite automatizada en el repositorio).
+
+| Módulo | Total TC | Aprobados (verificación manual) | Pendientes |
 |---|---|---|---|
 | AUTH (login real por roles) | 7 | 7 | 0 |
 | ALU — Alumnos | 13 | 13 | 0 |

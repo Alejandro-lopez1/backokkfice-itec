@@ -1,10 +1,16 @@
 package com.itec.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Entidad Materia del dominio academico.
+ * <p>
+ * La lista de correlativas esta encapsulada: el constructor y el setter
+ * copian la lista recibida (copia defensiva, RN-TRA-02) y el getter
+ * expone una vista no modificable. La unica forma de modificar la
+ * relacion desde fuera es {@link #agregarCorrelativa(Materia)}.
  */
 public class Materia {
 
@@ -60,12 +66,22 @@ public class Materia {
         this.activa = activa;
     }
 
+    /**
+     * Vista <b>no modificable</b> de las correlativas: permite consultar,
+     * iterar y verificar pertenencia, pero no agregar ni reemplazar la
+     * lista interna. Para agregar, usar {@link #agregarCorrelativa(Materia)}.
+     */
     public List<Materia> getListaCorrelativas() {
-        return listaCorrelativas;
+        return Collections.unmodifiableList(listaCorrelativas);
     }
 
+    /**
+     * Reemplaza la lista de correlativas aplicando copia defensiva:
+     * la lista entrante nunca se guarda por referencia (misma politica
+     * que el constructor).
+     */
     public void setListaCorrelativas(List<Materia> listaCorrelativas) {
-        this.listaCorrelativas = listaCorrelativas;
+        this.listaCorrelativas = listaCorrelativas != null ? new ArrayList<>(listaCorrelativas) : new ArrayList<>();
     }
 
     /**

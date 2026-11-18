@@ -35,9 +35,10 @@ dominio y la arquitectura — y eso es exactamente lo que entrega esta solución
 Un MVP es válido cuando **cada restricción es reemplazable sin tocar el resto**:
 esa es la tesis que la demo y esta documentación sostienen.
 
-Al arrancar, el `DataSeeder` carga datos de demostración coherentes (alumnos,
-profesores, materias con correlativas, comisiones, carreras y planes ya
-vinculados), para poder operar sin carga previa.
+Al arrancar (después del login del `AuthView`), el `DataSeeder` carga datos
+de demostración coherentes (alumnos, profesores, materias con correlativas,
+comisiones, carreras y planes ya vinculados), para poder operar sin carga
+previa.
 
 ---
 
@@ -324,8 +325,11 @@ previas. Referencia rápida de datos sembrados:
 - **Comisiones**: **ID 1** = Programacion I (2026-C1, Ana Rodriguez) —
   **ID 2** = Base de Datos (2026-C2, Luis Martinez).
 
-Arranque: `.\mvnw.cmd clean compile exec:java` — mencionar: *"el seeder ya
-cargó un semestre completo, opero de inmediato"*.
+Arranque: `.\mvnw.cmd clean compile exec:java`. **Paso 0 — login**: el
+sistema pide usuario y contraseña antes que nada; ingresar `admin` /
+`admin123` → `Bienvenido, admin (ADMIN)`. Mencionar: *"el seeder ya
+cargó un semestre completo, opero de inmediato"* y que las cuentas son de
+demostración (texto plano, alcance académico).
 
 ### Paso 1 — Listar Alumnos (opción 1 → 4)
 
@@ -402,6 +406,14 @@ diagrama Mermaid del README.
   mismo objeto: el plan conserva la referencia.
 - *"¿Cómo implementarían el 70% del Anexo?"* → Leyendo las `Asistencia` ya
   persistidas por `AlumnoInscripto`: es un cálculo sobre datos existentes.
+- *"¿Los services verifican el rol del usuario?"* → No: el control ocurre
+  **solo al armar el menú** (ADMIN/DOCENTE/ALUMNO); los `*Service` no
+  reciben el usuario. Es el límite documentado en RN-AUTH-04, pendiente de
+  Fase 2 junto con la gestión de cuentas.
+- *"¿Los tests están automatizados?"* → No: los 74 TC de
+  `05_Casos_de_Prueba.md` son **pruebas manuales** por consola (no hay
+  JUnit ni `src/test` en el repo); la arquitectura por capas permite
+  agregar una suite sin tocar el código.
 - *"¿Y la auditoría?"* → `AuditService` + `AuditRepositoryImpl` nuevos,
   cableados en el `Main`; los services existentes agregan una línea, nada más.
 
@@ -467,4 +479,5 @@ Otras decisiones de nomenclatura/alcance, también documentadas:
   (el MVP no crea inscripciones por carrera).
 
 Con esto, el modelo de objetos cumple el diagrama definitivo sin sacrificar
-ninguna regla de negocio aprobada (74 casos de prueba).
+ninguna regla de negocio aprobada (74 casos de prueba manuales, sin suite
+automatizada — ver `05_Casos_de_Prueba.md`).

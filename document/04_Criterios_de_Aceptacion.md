@@ -650,5 +650,9 @@ Las siguientes US **no tienen escenarios** porque **no están implementadas**
 
 - **US-ASIS-03, US-ASIS-04, US-ASIS-05 y US-CAL-03 a US-CAL-06** — Anexo,
   roadmap Fase 2 (ver `01_Alcance.md §4` y `03_Epicas_y_User_Stories.md`).
+- **Consulta de datos del rol ALUMNO** — la opción `1. Consultar mis datos`
+  del menú ALUMNO es un **placeholder** con aviso de funcionalidad en
+  desarrollo; no corresponde a una US implementada (Fase 2). El escenario 3
+  de US-AUTH-01 documenta ese comportamiento tal como es hoy.
 
 Cuando se implementen, este documento debe completarse con sus escenarios.
